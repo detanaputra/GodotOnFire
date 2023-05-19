@@ -16,19 +16,23 @@ import java.util.Set;
 import id.maingames.godotonfire.authentications.AnonymousSigninActivity;
 import id.maingames.godotonfire.authentications.EmailSigninActivity;
 import id.maingames.godotonfire.authentications.GoogleSigninActivity;
+import id.maingames.godotonfire.databases.RealtimeDatabaseActivity;
+import id.maingames.godotonfire.firestores.FirestoreActivity;
 
 public class GodotOnFire extends GodotPlugin {
-    private static Godot _godot;
 
     public GodotOnFire(Godot godot) {
         super(godot);
-        _godot = godot;
+        //init(godot);
     }
 
     public void init(){
-        AnonymousSigninActivity.init(_godot);
-        GoogleSigninActivity.init(_godot);
-        EmailSigninActivity.init(_godot);
+        Godot godot = getGodot();
+        AnonymousSigninActivity.init(godot);
+        GoogleSigninActivity.init(godot);
+        EmailSigninActivity.init(godot);
+        RealtimeDatabaseActivity.init(godot);
+        FirestoreActivity.init(godot);
     }
 
     public void signinAnonymously(){
@@ -59,6 +63,38 @@ public class GodotOnFire extends GodotPlugin {
         EmailSigninActivity.getInstance().sendEmailVerification();
     }
 
+    public void databaseWriteUserData(String collName, Dictionary data){
+        RealtimeDatabaseActivity.getInstance().WriteUserData(collName, data);
+    }
+
+    public void databaseUpdateUserData(String collName, Dictionary data){
+        RealtimeDatabaseActivity.getInstance().UpdateUserData(collName, data);
+    }
+
+    public void databaseReadUserData(String collName){
+        RealtimeDatabaseActivity.getInstance().ReadUserData(collName);
+    }
+
+    public void databaseDeleteUserData(String collName){
+        RealtimeDatabaseActivity.getInstance().DeleteUserData(collName);
+    }
+
+    public void firestoreWriteUserData(String collName, Dictionary data){
+        FirestoreActivity.getInstance().WriteUserData(collName, data);
+    }
+
+    public void firestoreUpdateUserData(String collName, Dictionary data){
+        FirestoreActivity.getInstance().UpdateUserData(collName, data);
+    }
+
+    public void firestoreReadUserData(String collName){
+        FirestoreActivity.getInstance().ReadUserData(collName);
+    }
+
+    public void firestoreDeleteUserData(String collName){
+        FirestoreActivity.getInstance().DeleteUserData(collName);
+    }
+
     @NonNull
     @Override
     public String getPluginName() {
@@ -69,8 +105,10 @@ public class GodotOnFire extends GodotPlugin {
     @Override
     public List<String> getPluginMethods() {
         return Arrays.asList(
-            "init", "signinAnonymously", "signinGoogle", "linkAccountWithGoogle",
-            "signUpWithEmail", "signInWithEmail", "linkAccountWithEmail", "sendEmailVerification"
+            "init", "signinAnonymously", "signinGoogle", "linkAccountWithGoogle"
+            , "signUpWithEmail", "signInWithEmail", "linkAccountWithEmail", "sendEmailVerification"
+            , "databaseWriteUserData", "databaseUpdateUserData", "databaseReadUserData", "databaseDeleteUserData"
+            , "firestoreWriteUserData", "firestoreUpdateUserData", "firestoreReadUserData", "firestoreDeleteUserData"
         );
     }
 
@@ -86,6 +124,15 @@ public class GodotOnFire extends GodotPlugin {
         signals.add(new SignalInfo("_on_signin_email_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_send_email_verification_completed", Integer.class));
 
+        signals.add(new SignalInfo("_on_database_write_completed", Boolean.class));
+        signals.add(new SignalInfo("_on_database_update_completed", Boolean.class));
+        signals.add(new SignalInfo("_on_database_read_completed", Object.class));
+        signals.add(new SignalInfo("_on_database_delete_completed", Boolean.class));
+
+        signals.add(new SignalInfo("_on_firestore_write_completed", Boolean.class));
+        signals.add(new SignalInfo("_on_firestore_update_completed", Boolean.class));
+        signals.add(new SignalInfo("_on_firestore_read_completed", Object.class));
+        signals.add(new SignalInfo("_on_firestore_delete_completed", Boolean.class));
 
         //signals.add(new SignalInfo("disconnected"));
         //signals.add(new SignalInfo("billing_resume"));

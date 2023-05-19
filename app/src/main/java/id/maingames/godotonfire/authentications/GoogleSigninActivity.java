@@ -17,6 +17,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import org.godotengine.godot.Godot;
@@ -28,7 +29,6 @@ public class GoogleSigninActivity extends GodotPlugin {
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
     private static final int RC_LINK = 9002;
-    private static Godot _godot;
     private static GoogleSigninActivity instance;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
@@ -38,11 +38,12 @@ public class GoogleSigninActivity extends GodotPlugin {
     }
 
     public static void init(Godot godot){
-        _godot = godot;
         instance = new GoogleSigninActivity(godot);
         instance.mAuth = FirebaseAuth.getInstance();
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail().requestId().build();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+                .requestIdToken(godot.getString(R.string.default_web_client_id))
+                .requestEmail().requestId()
+                .build();
 
         instance.mGoogleSignInClient = GoogleSignIn.getClient(instance.getActivity(), gso);
     }
@@ -57,11 +58,13 @@ public class GoogleSigninActivity extends GodotPlugin {
 
     public void signin(){
         Intent signinIntent = mGoogleSignInClient.getSignInIntent();
+        Log.d(TAG, "Launching google signin");
         getActivity().startActivityForResult(signinIntent, RC_SIGN_IN);
     }
 
     public void linkAccount(){
         Intent signinIntent = mGoogleSignInClient.getSignInIntent();
+        Log.d(TAG, "Launching google link account");
         getActivity().startActivityForResult(signinIntent, RC_LINK);
     }
 
@@ -100,10 +103,12 @@ public class GoogleSigninActivity extends GodotPlugin {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         GodotFirebaseUser user = new GodotFirebaseUser(null);
+                        //FirebaseUser user = null;
                         if (task.isSuccessful()) {
                             // Sign in success
                             Log.d(TAG, "signInWithCredential:success");
                             user = new GodotFirebaseUser(mAuth.getCurrentUser());
+                            //user = mAuth.getCurrentUser();
                         } else {
                             // sign in fails
                             Log.w(TAG, "signInWithCredential:failure", task.getException());

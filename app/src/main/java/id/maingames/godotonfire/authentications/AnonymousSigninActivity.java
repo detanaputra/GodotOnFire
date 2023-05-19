@@ -19,7 +19,6 @@ import id.maingames.godotonfire.R;
 
 public class AnonymousSigninActivity extends GodotPlugin {
     private static final String TAG = "AnonymousAuth";
-    private static Godot _godot;
     private static AnonymousSigninActivity instance;
     private FirebaseAuth mAuth;
 
@@ -36,7 +35,6 @@ public class AnonymousSigninActivity extends GodotPlugin {
     }
 
     public static void init(Godot godot){
-        _godot = godot;
         instance = new AnonymousSigninActivity(godot);
         instance.mAuth = FirebaseAuth.getInstance();
     }

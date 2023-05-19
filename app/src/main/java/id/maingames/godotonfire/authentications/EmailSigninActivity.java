@@ -19,7 +19,6 @@ import id.maingames.godotonfire.R;
 
 public class EmailSigninActivity extends GodotPlugin {
     private static final String TAG = "EmailActivity";
-    private static Godot _godot;
     private static EmailSigninActivity instance;
     private FirebaseAuth mAuth;
 
@@ -28,7 +27,6 @@ public class EmailSigninActivity extends GodotPlugin {
     }
 
     public static void init(Godot godot){
-        _godot = godot;
         instance = new EmailSigninActivity(godot);
         instance.mAuth = FirebaseAuth.getInstance();
     }
