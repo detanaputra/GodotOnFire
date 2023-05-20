@@ -1,32 +1,29 @@
 package id.maingames.godotonfire.authentications;
 
-import org.godotengine.godot.plugin.GodotPlugin;
-
+import android.app.Activity;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 
-import org.godotengine.godot.Godot;
+import id.maingames.godotonfire.GodotOnFire;
 
-import id.maingames.godotonfire.R;
-
-public class AnonymousSigninActivity extends GodotPlugin {
+public class AnonymousSignin {
     private static final String TAG = "AnonymousAuth";
-    private static AnonymousSigninActivity instance;
+    private static AnonymousSignin instance;
+    private GodotOnFire godotOnFire;
+    private Activity godotActivity;
     private FirebaseAuth mAuth;
 
-    public AnonymousSigninActivity(Godot godot) {
-        super(godot);
+    public AnonymousSignin() {
+
     }
 
-    public static AnonymousSigninActivity getInstance(){
+    public static AnonymousSignin getInstance(){
         if(instance == null){
             Log.w(TAG, "Anonymous instance is null, call Init(godot) first before calling getInstance()"
                     , new NullPointerException("Anonymous Activity is null"));
@@ -34,15 +31,17 @@ public class AnonymousSigninActivity extends GodotPlugin {
         return instance;
     }
 
-    public static void init(Godot godot){
-        instance = new AnonymousSigninActivity(godot);
+    public static void init(GodotOnFire _godotOnFire, Activity _godotActivity){
+        instance = new AnonymousSignin();
+        instance.godotOnFire = _godotOnFire;
+        instance.godotActivity = _godotActivity;
         instance.mAuth = FirebaseAuth.getInstance();
     }
 
 
     public void signIn(){
         mAuth.signInAnonymously()
-                .addOnCompleteListener(this.getActivity(), new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(godotActivity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         GodotFirebaseUser user = new GodotFirebaseUser(null);
@@ -55,17 +54,8 @@ public class AnonymousSigninActivity extends GodotPlugin {
                             // sign in failed
                             Log.w(TAG, "signInAnonymously:failure", task.getException());
                         }
-                        emitSignal("_on_signin_anonymously_completed", user.ToDictionary());
+                        godotOnFire.emitGodotSignal("_on_signin_anonymously_completed", user.ToDictionary());
                     }
                 });
-    }
-
-
-
-
-    @NonNull
-    @Override
-    public String getPluginName() {
-        return getActivity().getString(R.string.app_name);
     }
 }

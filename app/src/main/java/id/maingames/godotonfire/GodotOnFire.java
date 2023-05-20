@@ -1,98 +1,178 @@
 package id.maingames.godotonfire;
 
+import android.content.Intent;
+
 import androidx.collection.ArraySet;
 
 import androidx.annotation.NonNull;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.godotengine.godot.Dictionary;
 import org.godotengine.godot.Godot;
 import org.godotengine.godot.plugin.GodotPlugin;
 import org.godotengine.godot.plugin.SignalInfo;
+import org.godotengine.godot.plugin.UsedByGodot;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import id.maingames.godotonfire.authentications.AnonymousSigninActivity;
-import id.maingames.godotonfire.authentications.EmailSigninActivity;
-import id.maingames.godotonfire.authentications.GoogleSigninActivity;
-import id.maingames.godotonfire.databases.RealtimeDatabaseActivity;
-import id.maingames.godotonfire.firestores.FirestoreActivity;
+import id.maingames.godotonfire.analytics.Analytics;
+import id.maingames.godotonfire.authentications.AnonymousSignin;
+import id.maingames.godotonfire.authentications.EmailSignin;
+import id.maingames.godotonfire.authentications.GodotFirebaseUser;
+import id.maingames.godotonfire.authentications.GoogleSignin;
+import id.maingames.godotonfire.databases.RealtimeDatabase;
+import id.maingames.godotonfire.firestores.Firestore;
 
 public class GodotOnFire extends GodotPlugin {
 
     public GodotOnFire(Godot godot) {
         super(godot);
-        //init(godot);
     }
 
+    @UsedByGodot
     public void init(){
-        Godot godot = getGodot();
-        AnonymousSigninActivity.init(godot);
-        GoogleSigninActivity.init(godot);
-        EmailSigninActivity.init(godot);
-        RealtimeDatabaseActivity.init(godot);
-        FirestoreActivity.init(godot);
+        AnonymousSignin.init(this, getActivity());
+        GoogleSignin.init(this, getActivity());
+        EmailSignin.init(this, getActivity());
+        listenAuthState();
+        RealtimeDatabase.init(this, getActivity());
+        Firestore.init(this, getActivity());
+        Analytics.init(this, getActivity());
     }
 
+    public void emitGodotSignal(String signalName, Object... signalArgs){
+        emitSignal(signalName, signalArgs);
+    }
+
+    @UsedByGodot
+    public void getFirebaseUser(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        GodotFirebaseUser godotUser = new GodotFirebaseUser(user);
+        emitGodotSignal("_on_got_firebase_user", godotUser.ToDictionary());
+    }
+
+    @UsedByGodot
+    public void signOut(){
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.signOut();
+    }
+
+    private void listenAuthState(){
+        FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                Dictionary signalParams = new Dictionary();
+                if (user != null){
+                    signalParams.put("status", 0);
+                    signalParams.put("message", "User signed in successfully");
+                    GodotFirebaseUser godotUser = new GodotFirebaseUser(user);
+                    signalParams.put("data", godotUser.ToDictionary());
+                    emitGodotSignal("_on_firebase_user_signedIn", signalParams);
+                }
+                else{
+                    signalParams.put("status", 0);
+                    signalParams.put("message", "User signed out successfully");
+                    emitGodotSignal("_on_firebase_user_signedOut", signalParams);
+                }
+            }
+        });
+    }
+
+    @UsedByGodot
     public void signinAnonymously(){
-        AnonymousSigninActivity.getInstance().signIn();
+        AnonymousSignin.getInstance().signIn();
     }
 
+    @UsedByGodot
     public void signinGoogle(){
-        GoogleSigninActivity.getInstance().signin();
+        GoogleSignin.getInstance().signin();
     }
 
+    @UsedByGodot
     public void linkAccountWithGoogle(){
-        GoogleSigninActivity.getInstance().linkAccount();
+        GoogleSignin.getInstance().linkAccount();
     }
 
+    @UsedByGodot
     public void signUpWithEmail(String email, String password){
-        EmailSigninActivity.getInstance().signUp(email, password);
+        EmailSignin.getInstance().signUp(email, password);
     }
 
+    @UsedByGodot
     public void signInWithEmail(String email, String password){
-        EmailSigninActivity.getInstance().signin(email, password);
+        EmailSignin.getInstance().signin(email, password);
     }
 
+    @UsedByGodot
     public void linkAccountWithEmail(String email, String password){
-        EmailSigninActivity.getInstance().linkAccount(email, password);
+        EmailSignin.getInstance().linkAccount(email, password);
     }
 
+    @UsedByGodot
     public void sendEmailVerification(){
-        EmailSigninActivity.getInstance().sendEmailVerification();
+        EmailSignin.getInstance().sendEmailVerification();
     }
 
+    @UsedByGodot
     public void databaseWriteUserData(String collName, Dictionary data){
-        RealtimeDatabaseActivity.getInstance().WriteUserData(collName, data);
+        RealtimeDatabase.getInstance().WriteUserData(collName, data);
     }
 
+    @UsedByGodot
     public void databaseUpdateUserData(String collName, Dictionary data){
-        RealtimeDatabaseActivity.getInstance().UpdateUserData(collName, data);
+        RealtimeDatabase.getInstance().UpdateUserData(collName, data);
     }
 
+    @UsedByGodot
     public void databaseReadUserData(String collName){
-        RealtimeDatabaseActivity.getInstance().ReadUserData(collName);
+        RealtimeDatabase.getInstance().ReadUserData(collName);
     }
 
+    @UsedByGodot
     public void databaseDeleteUserData(String collName){
-        RealtimeDatabaseActivity.getInstance().DeleteUserData(collName);
+        RealtimeDatabase.getInstance().DeleteUserData(collName);
     }
 
+    @UsedByGodot
     public void firestoreWriteUserData(String collName, Dictionary data){
-        FirestoreActivity.getInstance().WriteUserData(collName, data);
+        Firestore.getInstance().WriteUserData(collName, data);
     }
 
+    @UsedByGodot
     public void firestoreUpdateUserData(String collName, Dictionary data){
-        FirestoreActivity.getInstance().UpdateUserData(collName, data);
+        Firestore.getInstance().UpdateUserData(collName, data);
     }
 
+    @UsedByGodot
     public void firestoreReadUserData(String collName){
-        FirestoreActivity.getInstance().ReadUserData(collName);
+        Firestore.getInstance().ReadUserData(collName);
+        getActivity();
     }
 
+    @UsedByGodot
     public void firestoreDeleteUserData(String collName){
-        FirestoreActivity.getInstance().DeleteUserData(collName);
+        Firestore.getInstance().DeleteUserData(collName);
+    }
+
+    @UsedByGodot
+    public void logEvent(String eventName, Dictionary params){
+        Analytics.getInstance().logEvent(eventName, params);
+    }
+
+    @UsedByGodot
+    public void testCrash(){
+        throw new RuntimeException("this is forced crash to test Firebase Crashlytics. Do not call this method in production");
+    }
+
+    @Override
+    public void onMainActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onMainActivityResult(requestCode, resultCode, data);
+        GoogleSignin.getInstance().onMainActivityResult(requestCode, resultCode, data);
     }
 
     @NonNull
@@ -105,10 +185,11 @@ public class GodotOnFire extends GodotPlugin {
     @Override
     public List<String> getPluginMethods() {
         return Arrays.asList(
-            "init", "signinAnonymously", "signinGoogle", "linkAccountWithGoogle"
+            "init", "signOut", "signinAnonymously", "signinGoogle", "linkAccountWithGoogle", "getFirebaseUser"
             , "signUpWithEmail", "signInWithEmail", "linkAccountWithEmail", "sendEmailVerification"
             , "databaseWriteUserData", "databaseUpdateUserData", "databaseReadUserData", "databaseDeleteUserData"
             , "firestoreWriteUserData", "firestoreUpdateUserData", "firestoreReadUserData", "firestoreDeleteUserData"
+            , "logEvent", "testCrash"
         );
     }
 
@@ -117,37 +198,25 @@ public class GodotOnFire extends GodotPlugin {
     public Set<SignalInfo> getPluginSignals() {
         Set<SignalInfo> signals = new ArraySet<>();
 
+        signals.add(new SignalInfo("_on_got_firebase_user", Dictionary.class));
+        signals.add(new SignalInfo("_on_firebase_user_signedIn", Dictionary.class));
+        signals.add(new SignalInfo("_on_firebase_user_signedOut", Dictionary.class));
         signals.add(new SignalInfo("_on_signin_anonymously_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_google_signin_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_link_account_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_signup_email_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_signin_email_completed", Dictionary.class));
-        signals.add(new SignalInfo("_on_send_email_verification_completed", Integer.class));
+        signals.add(new SignalInfo("_on_send_email_verification_completed", Dictionary.class));
 
-        signals.add(new SignalInfo("_on_database_write_completed", Boolean.class));
-        signals.add(new SignalInfo("_on_database_update_completed", Boolean.class));
-        signals.add(new SignalInfo("_on_database_read_completed", Object.class));
-        signals.add(new SignalInfo("_on_database_delete_completed", Boolean.class));
+        signals.add(new SignalInfo("_on_database_write_completed", Dictionary.class));
+        signals.add(new SignalInfo("_on_database_update_completed", Dictionary.class));
+        signals.add(new SignalInfo("_on_database_read_completed", Dictionary.class));
+        signals.add(new SignalInfo("_on_database_delete_completed", Dictionary.class));
 
-        signals.add(new SignalInfo("_on_firestore_write_completed", Boolean.class));
-        signals.add(new SignalInfo("_on_firestore_update_completed", Boolean.class));
-        signals.add(new SignalInfo("_on_firestore_read_completed", Object.class));
-        signals.add(new SignalInfo("_on_firestore_delete_completed", Boolean.class));
-
-        //signals.add(new SignalInfo("disconnected"));
-        //signals.add(new SignalInfo("billing_resume"));
-        //signals.add(new SignalInfo("connect_error", Integer.class, String.class));
-        //signals.add(new SignalInfo("purchases_updated", Object[].class));
-        //signals.add(new SignalInfo("query_purchases_response", Object.class));
-        //signals.add(new SignalInfo("purchase_error", Integer.class, String.class));
-        //signals.add(new SignalInfo("sku_details_query_completed", Object[].class));
-        //signals.add(new SignalInfo("sku_details_query_error", Integer.class, String.class, String[].class));
-        //signals.add(new SignalInfo("price_change_acknowledged", Integer.class));
-        //signals.add(new SignalInfo("purchase_acknowledged", String.class));
-        //signals.add(new SignalInfo("purchase_acknowledgement_error", Integer.class, String.class, String.class));
-        //signals.add(new SignalInfo("purchase_consumed", String.class));
-        //signals.add(new SignalInfo("purchase_consumption_error", Integer.class, String.class, String.class));
-
+        signals.add(new SignalInfo("_on_firestore_write_completed", Dictionary.class));
+        signals.add(new SignalInfo("_on_firestore_update_completed", Dictionary.class));
+        signals.add(new SignalInfo("_on_firestore_read_completed", Dictionary.class));
+        signals.add(new SignalInfo("_on_firestore_delete_completed", Dictionary.class));
         return signals;
     }
 }

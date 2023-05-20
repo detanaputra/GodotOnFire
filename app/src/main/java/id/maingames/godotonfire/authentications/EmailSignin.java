@@ -1,5 +1,6 @@
 package id.maingames.godotonfire.authentications;
 
+import android.app.Activity;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,26 +13,29 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.godotengine.godot.Godot;
-import org.godotengine.godot.plugin.GodotPlugin;
+import org.godotengine.godot.Dictionary;
 
-import id.maingames.godotonfire.R;
+import id.maingames.godotonfire.GodotOnFire;
 
-public class EmailSigninActivity extends GodotPlugin {
+public class EmailSignin {
     private static final String TAG = "EmailActivity";
-    private static EmailSigninActivity instance;
+    private static EmailSignin instance;
     private FirebaseAuth mAuth;
+    private GodotOnFire godotOnFire;
+    private Activity godotActivity;
 
-    public EmailSigninActivity(Godot godot) {
-        super(godot);
+    public EmailSignin() {
+
     }
 
-    public static void init(Godot godot){
-        instance = new EmailSigninActivity(godot);
+    public static void init(GodotOnFire _godotOnFire, Activity _godotActivity){
+        instance = new EmailSignin();
+        instance.godotOnFire = _godotOnFire;
+        instance.godotActivity = _godotActivity;
         instance.mAuth = FirebaseAuth.getInstance();
     }
 
-    public static EmailSigninActivity getInstance(){
+    public static EmailSignin getInstance(){
         if(instance == null){
             Log.w(TAG, "Email sign in instance is null, call Init(godot) first before calling getInstance()"
                     , new NullPointerException("EmailSigninActivity is null"));
@@ -41,7 +45,7 @@ public class EmailSigninActivity extends GodotPlugin {
 
     public void signUp(String email, String password){
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this.getActivity(), new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(godotActivity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         GodotFirebaseUser user = new GodotFirebaseUser(null);
@@ -52,14 +56,14 @@ public class EmailSigninActivity extends GodotPlugin {
                         else{
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         }
-                        emitSignal("_on_signup_email_completed", user.ToDictionary());
+                        godotOnFire.emitGodotSignal("_on_signup_email_completed", user.ToDictionary());
                     }
                 });
     }
 
     public void signin(String email, String password){
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this.getActivity(), new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(godotActivity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         GodotFirebaseUser user = new GodotFirebaseUser(null);
@@ -70,7 +74,7 @@ public class EmailSigninActivity extends GodotPlugin {
                         else{
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                         }
-                        emitSignal("_on_signin_email_completed", user.ToDictionary());
+                        godotOnFire.emitGodotSignal("_on_signin_email_completed", user.ToDictionary());
                     }
                 });
     }
@@ -78,7 +82,7 @@ public class EmailSigninActivity extends GodotPlugin {
     public void linkAccount(String email, String password){
         AuthCredential credential = EmailAuthProvider.getCredential(email, password);
         mAuth.getCurrentUser().linkWithCredential(credential)
-                .addOnCompleteListener(this.getActivity(), new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(godotActivity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         GodotFirebaseUser user = new GodotFirebaseUser(null);
@@ -89,7 +93,7 @@ public class EmailSigninActivity extends GodotPlugin {
                         else{
                             Log.w(TAG, "linkWithEmailCredential:failure", task.getException());
                         }
-                        emitSignal("_on_link_account_completed", user.ToDictionary());
+                        godotOnFire.emitGodotSignal("_on_link_account_completed", user.ToDictionary());
                     }
                 });
     }
@@ -97,25 +101,20 @@ public class EmailSigninActivity extends GodotPlugin {
     public void sendEmailVerification(){
         FirebaseUser user = mAuth.getCurrentUser();
         user.sendEmailVerification()
-                .addOnCompleteListener(this.getActivity(), new OnCompleteListener<Void>() {
+                .addOnCompleteListener(godotActivity, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        int emailSent = 1;
+                        Dictionary data = new Dictionary();
                         if(task.isSuccessful()){
-                            emailSent = 0;
+                            data.put("status", 0);
                             Log.d(TAG, "sendEmailVerification:success");
                         }
                         else{
+                            data.put("status", 1);
                             Log.w(TAG, "sendEmailVerification:failure");
                         }
-                        emitSignal("_on_send_email_verification_completed", emailSent);
+                        godotOnFire.emitGodotSignal("_on_send_email_verification_completed", data);
                     }
                 });
-    }
-
-    @NonNull
-    @Override
-    public String getPluginName() {
-        return getActivity().getString(R.string.app_name);
     }
 }
