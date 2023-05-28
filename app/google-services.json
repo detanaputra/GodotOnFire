@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "1016338599244-c37gns0a5fcudck6jg2honvl3fpmimva.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.maingames.godotonfire",
+            "certificate_hash": "8d3991e04cb9974a3e1be60eaaf4582894223088"
+          }
+        },
+        {
+          "client_id": "1016338599244-jcejvg4f42pk9g2i1d3q94jl5a8hfpan.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.maingames.godotonfire",
+            "certificate_hash": "086cbca55f3f156ada131bcbf8fe141bb22c1b3a"
+          }
+        },
+        {
           "client_id": "1016338599244-uklj1m9p7r1es58931vvn5p09t7ia33c.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -28,7 +44,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1016338599244-uklj1m9p7r1es58931vvn5p09t7ia33c.apps.googleusercontent.com",
+              "client_id": "1016338599244-s5joaefae5vkt2pl0bj4a6ddmtge7lsq.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

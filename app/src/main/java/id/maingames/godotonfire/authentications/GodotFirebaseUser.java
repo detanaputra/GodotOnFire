@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseUser;
 import org.godotengine.godot.Dictionary;
 
 public class GodotFirebaseUser {
-    private FirebaseUser _user;
     private int status = 1;
     private String uid = "";
     private String displayName = "";
@@ -13,8 +12,7 @@ public class GodotFirebaseUser {
     private String providerId = "";
     
     public GodotFirebaseUser(FirebaseUser user){
-        _user = user;
-        if (_user != null){
+        if (user != null){
             status = 0;
             uid = user.getUid();
             displayName = user.getDisplayName();
