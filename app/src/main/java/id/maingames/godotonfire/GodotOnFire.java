@@ -119,13 +119,13 @@ public class GodotOnFire extends GodotPlugin {
     }
 
     @UsedByGodot
-    public void databaseWriteUserData(String collName, Dictionary data){
-        RealtimeDatabase.getInstance().WriteUserData(collName, data);
+    public void databaseWriteUserData(String collName, String jsonString){
+        RealtimeDatabase.getInstance().WriteUserData(collName, jsonString);
     }
 
     @UsedByGodot
-    public void databaseUpdateUserData(String collName, Dictionary data){
-        RealtimeDatabase.getInstance().UpdateUserData(collName, data);
+    public void databaseUpdateUserData(String collName, String jsonString){
+        RealtimeDatabase.getInstance().UpdateUserData(collName, jsonString);
     }
 
     @UsedByGodot
@@ -139,13 +139,13 @@ public class GodotOnFire extends GodotPlugin {
     }
 
     @UsedByGodot
-    public void firestoreWriteUserData(String collName, Dictionary data){
-        Firestore.getInstance().WriteUserData(collName, data);
+    public void firestoreWriteUserData(String collName, String jsonString){
+        Firestore.getInstance().WriteUserData(collName, jsonString);
     }
 
     @UsedByGodot
-    public void firestoreUpdateUserData(String collName, Dictionary data){
-        Firestore.getInstance().UpdateUserData(collName, data);
+    public void firestoreUpdateUserData(String collName, String jsonString){
+        Firestore.getInstance().UpdateUserData(collName, jsonString);
     }
 
     @UsedByGodot

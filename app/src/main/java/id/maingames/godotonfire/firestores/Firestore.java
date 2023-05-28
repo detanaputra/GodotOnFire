@@ -17,6 +17,7 @@ import org.godotengine.godot.Dictionary;
 import java.util.Map;
 
 import id.maingames.godotonfire.GodotOnFire;
+import id.maingames.godotonfire.utilities.JsonConverter;
 
 public class Firestore {
     private static final String TAG = "Firestore";
@@ -44,7 +45,7 @@ public class Firestore {
         return instance;
     }
 
-    public void WriteUserData(String collName, Dictionary data){
+    public void WriteUserData(String collName, String jsonString){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Dictionary signalParams = new Dictionary();
         if (user == null){
@@ -54,7 +55,16 @@ public class Firestore {
             godotOnFire.emitGodotSignal("_on_firestore_write_completed", signalParams);
             return;
         }
-        database.collection(collName).document(user.getUid()).set(data)
+        Dictionary _data = JsonConverter.jsonToDictionary(jsonString);
+        if (_data == null){
+            signalParams.put("status", 1);
+            signalParams.put("message", "Failed to marshall json string to Dictionary");
+            Log.w(TAG, "firestoreWriteUserdata:failed. Failed to marshall json string to Dictionary.");
+            godotOnFire.emitGodotSignal("_on_firestore_write_completed", signalParams);
+            return;
+        }
+
+        database.collection(collName).document(user.getUid()).set(_data)
             .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -76,7 +86,7 @@ public class Firestore {
             });
     }
 
-    public void UpdateUserData(String collName, Dictionary data){
+    public void UpdateUserData(String collName, String jsonString){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Dictionary signalParams = new Dictionary();
         if (user == null){
@@ -86,12 +96,20 @@ public class Firestore {
             godotOnFire.emitGodotSignal("_on_firestore_update_completed", signalParams);
             return;
         }
-        database.collection(collName).document(user.getUid()).update(data)
+        Dictionary _data = JsonConverter.jsonToDictionary(jsonString);
+        if (_data == null){
+            signalParams.put("status", 1);
+            signalParams.put("message", "Failed to marshall json string to Dictionary");
+            Log.w(TAG, "firestoreWriteUserdata:failed. Failed to marshall json string to Dictionary.");
+            godotOnFire.emitGodotSignal("_on_firestore_update_completed", signalParams);
+            return;
+        }
+        database.collection(collName).document(user.getUid()).update(_data)
             .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     signalParams.put("status", 0);
-                    signalParams.put("message", "Firestore update has success");
+                    signalParams.put("message", "Firestore update has succeed");
                     Log.d(TAG, "firesoreUpdateUserdata:success");
                     godotOnFire.emitGodotSignal("_on_firestore_update_completed", signalParams);
                 }
@@ -124,8 +142,9 @@ public class Firestore {
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     try{
                         Map<String, Object> obj = documentSnapshot.getData();
-                        Dictionary data = new Dictionary();
-                        data.putAll(obj);
+                        /*Dictionary data = new Dictionary();
+                        data.putAll(obj);*/
+                        String data = JsonConverter.mapToJson(obj);
                         signalParams.put("status", 0);
                         signalParams.put("message", "Firestore read has success");
                         signalParams.put("data", data);

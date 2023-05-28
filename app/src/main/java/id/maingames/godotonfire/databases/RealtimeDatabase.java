@@ -5,22 +5,20 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 
 import org.godotengine.godot.Dictionary;
 
 import java.util.Map;
 
 import id.maingames.godotonfire.GodotOnFire;
+import id.maingames.godotonfire.utilities.JsonConverter;
 
 public class RealtimeDatabase {
     private static final String TAG = "RealtimeDatabase";
@@ -53,7 +51,7 @@ public class RealtimeDatabase {
         return instance;
     }
 
-    public void WriteUserData(String collName, Dictionary data){
+    public void WriteUserData(String collName, String jsonString){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Dictionary signalParams = new Dictionary();
         if (user == null){
@@ -63,7 +61,15 @@ public class RealtimeDatabase {
             godotOnFire.emitGodotSignal("_on_database_write_completed", signalParams);
             return;
         }
-        dbRef.child(collName).child(user.getUid()).setValue(data)
+        Dictionary _data = JsonConverter.jsonToDictionary(jsonString);
+        if (_data == null){
+            signalParams.put("status", 1);
+            signalParams.put("message", "Failed to marshall json string to Dictionary");
+            Log.w(TAG, "realtimeDatabaseWriteUserdata:failed. Failed to marshall json string to Dictionary.");
+            godotOnFire.emitGodotSignal("_on_database_write_completed", signalParams);
+            return;
+        }
+        dbRef.child(collName).child(user.getUid()).setValue(_data)
             .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -84,7 +90,7 @@ public class RealtimeDatabase {
             });
     }
 
-    public void UpdateUserData(String collName, Dictionary data){
+    public void UpdateUserData(String collName, String jsonString){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Dictionary signalParams = new Dictionary();
         if (user == null){
@@ -94,7 +100,15 @@ public class RealtimeDatabase {
             godotOnFire.emitGodotSignal("_on_database_update_completed", signalParams);
             return;
         }
-        dbRef.child(collName).child(user.getUid()).updateChildren(data)
+        Dictionary _data = JsonConverter.jsonToDictionary(jsonString);
+        if (_data == null){
+            signalParams.put("status", 1);
+            signalParams.put("message", "Failed to marshall json string to Dictionary");
+            Log.w(TAG, "realtimeDatabaseUpdateUserdata:failed. Failed to marshall json string to Dictionary.");
+            godotOnFire.emitGodotSignal("_on_database_update_completed", signalParams);
+            return;
+        }
+        dbRef.child(collName).child(user.getUid()).updateChildren(_data)
             .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -132,8 +146,9 @@ public class RealtimeDatabase {
                 public void onSuccess(DataSnapshot dataSnapshot) {
                     try{
                         Map<String, Object> obj = (Map<String, Object>)dataSnapshot.getValue();
-                        Dictionary data = new Dictionary();
-                        data.putAll(obj);
+                        /*Dictionary data = new Dictionary();
+                        data.putAll(obj);*/
+                        String data = JsonConverter.mapToJson(obj);
                         signalParams.put("status", 0);
                         signalParams.put("message", "Database read has success");
                         signalParams.put("data", data);
