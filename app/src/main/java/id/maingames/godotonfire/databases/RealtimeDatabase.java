@@ -21,7 +21,7 @@ import id.maingames.godotonfire.GodotOnFire;
 import id.maingames.godotonfire.utilities.JsonConverter;
 
 public class RealtimeDatabase {
-    private static final String TAG = "RealtimeDatabase";
+    private static String TAG = "";
 
     private static RealtimeDatabase instance;
 
@@ -36,6 +36,7 @@ public class RealtimeDatabase {
 
     public static void init(GodotOnFire _godotOnFire, Activity _godotActivity){
         instance = new RealtimeDatabase();
+        TAG = _godotOnFire.getPluginName();
         instance.database = FirebaseDatabase.getInstance();
         instance.database.setPersistenceEnabled(true);
         instance.godotOnFire = _godotOnFire;

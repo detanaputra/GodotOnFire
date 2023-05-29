@@ -30,7 +30,7 @@ import id.maingames.godotonfire.GodotOnFire;
 import id.maingames.godotonfire.R;
 
 public class GoogleSignin {
-    private static final String TAG = "GoogleActivity";
+    private static String TAG = "";
     public static final int RC_SIGN_IN = 9001;
     public static final int RC_LINK = 9002;
     private static GoogleSignin instance;
@@ -46,6 +46,7 @@ public class GoogleSignin {
 
     public static void init(GodotOnFire _godotOnFire, Activity _godotActivity){
         instance = new GoogleSignin();
+        TAG = _godotOnFire.getPluginName();
         instance.godotOnFire = _godotOnFire;
         instance.godotActivity = _godotActivity;
         instance.mAuth = FirebaseAuth.getInstance();

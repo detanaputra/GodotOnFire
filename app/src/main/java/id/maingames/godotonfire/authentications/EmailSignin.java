@@ -18,7 +18,7 @@ import org.godotengine.godot.Dictionary;
 import id.maingames.godotonfire.GodotOnFire;
 
 public class EmailSignin {
-    private static final String TAG = "EmailActivity";
+    private static String TAG = "";
     private static EmailSignin instance;
     private FirebaseAuth mAuth;
     private GodotOnFire godotOnFire;
@@ -30,6 +30,7 @@ public class EmailSignin {
 
     public static void init(GodotOnFire _godotOnFire, Activity _godotActivity){
         instance = new EmailSignin();
+        TAG = _godotOnFire.getPluginName();
         instance.godotOnFire = _godotOnFire;
         instance.godotActivity = _godotActivity;
         instance.mAuth = FirebaseAuth.getInstance();

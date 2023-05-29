@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import id.maingames.godotonfire.GodotOnFire;
 
 public class AnonymousSignin {
-    private static final String TAG = "AnonymousAuth";
+    private static String TAG = "";
     private static AnonymousSignin instance;
     private GodotOnFire godotOnFire;
     private Activity godotActivity;
@@ -33,6 +33,7 @@ public class AnonymousSignin {
 
     public static void init(GodotOnFire _godotOnFire, Activity _godotActivity){
         instance = new AnonymousSignin();
+        TAG = _godotOnFire.getPluginName();
         instance.godotOnFire = _godotOnFire;
         instance.godotActivity = _godotActivity;
         instance.mAuth = FirebaseAuth.getInstance();

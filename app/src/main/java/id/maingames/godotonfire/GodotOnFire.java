@@ -26,6 +26,7 @@ import id.maingames.godotonfire.authentications.GodotFirebaseUser;
 import id.maingames.godotonfire.authentications.GoogleSignin;
 import id.maingames.godotonfire.databases.RealtimeDatabase;
 import id.maingames.godotonfire.firestores.Firestore;
+import id.maingames.godotonfire.remoteConfigs.RemoteConfig;
 
 public class GodotOnFire extends GodotPlugin {
 
@@ -42,6 +43,7 @@ public class GodotOnFire extends GodotPlugin {
         RealtimeDatabase.init(this, getActivity());
         Firestore.init(this, getActivity());
         Analytics.init(this, getActivity());
+        RemoteConfig.init(this, getActivity());
     }
 
     public void emitGodotSignal(String signalName, Object... signalArgs){
@@ -169,6 +171,35 @@ public class GodotOnFire extends GodotPlugin {
         throw new RuntimeException("this is forced crash to test Firebase Crashlytics. Do not call this method in production");
     }
 
+    @UsedByGodot
+    public void remoteConfigFetch(){
+        RemoteConfig.getInstance().fetch();
+    }
+    @UsedByGodot
+    public void remoteConfigActivate(){
+        RemoteConfig.getInstance().activate();
+    }
+    @UsedByGodot
+    public void remoteConfigFetchAndActivate(){
+        RemoteConfig.getInstance().fetchAndActivate();
+    }
+    @UsedByGodot
+    public void remoteConfigGetString(String key){
+        RemoteConfig.getInstance().getString(key);
+    }
+    @UsedByGodot
+    public void remoteConfigGetLong(String key){
+        RemoteConfig.getInstance().getLong(key);
+    }
+    @UsedByGodot
+    public void remoteConfigGetBoolean(String key){
+        RemoteConfig.getInstance().getBoolean(key);
+    }
+    @UsedByGodot
+    public void remoteConfigGetDouble(String key){
+        RemoteConfig.getInstance().getDouble(key);
+    }
+
     @Override
     public void onMainActivityResult(int requestCode, int resultCode, Intent data) {
         super.onMainActivityResult(requestCode, resultCode, data);
@@ -190,6 +221,8 @@ public class GodotOnFire extends GodotPlugin {
             , "databaseWriteUserData", "databaseUpdateUserData", "databaseReadUserData", "databaseDeleteUserData"
             , "firestoreWriteUserData", "firestoreUpdateUserData", "firestoreReadUserData", "firestoreDeleteUserData"
             , "logEvent", "testCrash"
+            ,"remoteConfigFetch", "remoteConfigActivate", "remoteConfigFetchAndActivate", "remoteConfigGetString"
+            , "remoteConfigGetLong", "remoteConfigGetBoolean", "remoteConfigGetDouble"
         );
     }
 
@@ -217,6 +250,10 @@ public class GodotOnFire extends GodotPlugin {
         signals.add(new SignalInfo("_on_firestore_update_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_firestore_read_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_firestore_delete_completed", Dictionary.class));
+
+        signals.add(new SignalInfo("_on_remote_config_fetched", Dictionary.class));
+        signals.add(new SignalInfo("_on_remote_config_activated", Dictionary.class));
+        signals.add(new SignalInfo("_on_remote_config_got_value", Dictionary.class));
         return signals;
     }
 }

@@ -20,7 +20,7 @@ import id.maingames.godotonfire.GodotOnFire;
 import id.maingames.godotonfire.utilities.JsonConverter;
 
 public class Firestore {
-    private static final String TAG = "Firestore";
+    private static String TAG = "";
     private static Firestore instance;
     private FirebaseFirestore database;
     private GodotOnFire godotOnFire;
@@ -32,6 +32,7 @@ public class Firestore {
 
     public static void init(GodotOnFire _godotOnFire, Activity _godotActivity){
         instance = new Firestore();
+        TAG = _godotOnFire.getPluginName();
         instance.godotOnFire = _godotOnFire;
         instance.godotActivity = _godotActivity;
         instance.database = FirebaseFirestore.getInstance();
@@ -148,7 +149,7 @@ public class Firestore {
                         signalParams.put("status", 0);
                         signalParams.put("message", "Firestore read has success");
                         signalParams.put("data", data);
-                        Log.d(TAG, "firestoreReadUserdata:success" );
+                        Log.d(TAG, "firestoreReadUserdata:success " + data );
                         godotOnFire.emitGodotSignal("_on_firestore_read_completed", signalParams);
                     } catch (Exception e){
                         Log.w(TAG, "firestoreReadUserdata:failed " + e.getLocalizedMessage() );

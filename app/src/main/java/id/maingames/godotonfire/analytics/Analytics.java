@@ -14,7 +14,7 @@ import java.util.Map;
 import id.maingames.godotonfire.GodotOnFire;
 
 public class Analytics{
-    private static final String TAG = "FirebaseAnalytics";
+    private static String TAG = "";
     private static Analytics instance;
     private GodotOnFire godotOnFire;
     private Activity godotActivity;
@@ -32,6 +32,7 @@ public class Analytics{
 
     public static void init(GodotOnFire _godotOnFire, Activity _godotActivity){
         instance = new Analytics();
+        TAG = _godotOnFire.getPluginName();
         instance.godotOnFire = _godotOnFire;
         instance.godotActivity = _godotActivity;
         instance.mFirebaseAnalytics = FirebaseAnalytics.getInstance(_godotActivity);
