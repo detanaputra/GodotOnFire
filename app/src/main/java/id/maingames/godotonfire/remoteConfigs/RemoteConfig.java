@@ -16,6 +16,7 @@ import org.godotengine.godot.Dictionary;
 import java.util.Map;
 
 import id.maingames.godotonfire.GodotOnFire;
+import id.maingames.godotonfire.utilities.JsonConverter;
 
 public class RemoteConfig {
     private static String TAG = "";
@@ -139,8 +140,9 @@ public class RemoteConfig {
         Dictionary signalParams = new Dictionary();
         signalParams.put("status", 0);
         signalParams.put("message", "got value from remote config");
-        Dictionary data = new Dictionary();
-        data.put(key, value);
+        Dictionary dict = new Dictionary();
+        dict.put(key, value);
+        String data = JsonConverter.dictToJson(dict);
         signalParams.put("data", data);
         godotOnFire.emitGodotSignal("_on_remote_config_got_value", signalParams);
     }

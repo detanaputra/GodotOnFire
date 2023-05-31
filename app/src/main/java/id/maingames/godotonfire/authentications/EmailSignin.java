@@ -62,7 +62,7 @@ public class EmailSignin {
                             signalParams.put("message", "Create user with email has failed");
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         }
-                        signalParams.put("data", user.ToDictionary());
+                        signalParams.put("data", user.toJson());
                         godotOnFire.emitGodotSignal("_on_signup_email_completed", signalParams);
                     }
                 });
@@ -86,7 +86,7 @@ public class EmailSignin {
                             signalParams.put("message", "Sign in with email has failed");
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                         }
-                        signalParams.put("data", user.ToDictionary());
+                        signalParams.put("data", user.toJson());
                         godotOnFire.emitGodotSignal("_on_signin_email_completed", signalParams);
                     }
                 });
@@ -111,7 +111,7 @@ public class EmailSignin {
                             signalParams.put("status", 1);
                             signalParams.put("message", "Link with email credential has failed");
                         }
-                        signalParams.put("data", user.ToDictionary());
+                        signalParams.put("data", user.toJson());
                         godotOnFire.emitGodotSignal("_on_link_account_completed", signalParams);
                     }
                 });
@@ -127,13 +127,11 @@ public class EmailSignin {
                         if(task.isSuccessful()){
                             signalParams.put("status", 0);
                             signalParams.put("message", "Send email verification has succeed");
-                            signalParams.put("data", true);
                             Log.d(TAG, "sendEmailVerification:success");
                         }
                         else{
                             signalParams.put("status", 1);
                             signalParams.put("message", "Send email verification has failed");
-                            signalParams.put("data", false);
                             Log.w(TAG, "sendEmailVerification:failure ", task.getException());
                         }
                         godotOnFire.emitGodotSignal("_on_send_email_verification_completed", signalParams);

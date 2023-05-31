@@ -63,7 +63,7 @@ public class AnonymousSignin {
                             signalParams.put(godotActivity.getString(R.string.message), "Sign in anonymously has failed");
                             Log.w(TAG, "signInAnonymously:failure", task.getException());
                         }
-                        signalParams.put(godotActivity.getString(R.string.data), user.ToDictionary());
+                        signalParams.put(godotActivity.getString(R.string.data), user.toJson());
                         godotOnFire.emitGodotSignal("_on_signin_anonymously_completed", signalParams);
                     }
                 });

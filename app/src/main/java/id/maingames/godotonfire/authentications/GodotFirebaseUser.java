@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 import org.godotengine.godot.Dictionary;
 
+import id.maingames.godotonfire.utilities.JsonConverter;
+
 public class GodotFirebaseUser {
     private int status = 1;
     private String uid = "";
@@ -21,7 +23,7 @@ public class GodotFirebaseUser {
         }
     }
 
-    public Dictionary ToDictionary(){
+    public Dictionary toDictionary(){
         Dictionary dictionary = new Dictionary();
         dictionary.put("status", status);
         dictionary.put("uid", uid);
@@ -30,5 +32,9 @@ public class GodotFirebaseUser {
         dictionary.put("providerId", providerId);
 
         return dictionary;
+    }
+
+    public String toJson(){
+        return JsonConverter.toJson(this);
     }
 }

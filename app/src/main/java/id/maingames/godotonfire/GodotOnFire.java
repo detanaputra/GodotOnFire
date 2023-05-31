@@ -63,7 +63,7 @@ public class GodotOnFire extends GodotPlugin {
             signalParams.put("status", 1);
             signalParams.put("message", "Firebase user is null. It might be because user is signed out");
         }
-        signalParams.put("data", godotUser.ToDictionary());
+        signalParams.put("data", godotUser.toJson());
         emitGodotSignal("_on_got_firebase_user", signalParams);
     }
 
@@ -79,15 +79,14 @@ public class GodotOnFire extends GodotPlugin {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 Dictionary signalParams = new Dictionary();
+                signalParams.put("status", 0);
                 if (user != null){
-                    signalParams.put("status", 0);
                     signalParams.put("message", "User signed in successfully");
                     GodotFirebaseUser godotUser = new GodotFirebaseUser(user);
-                    signalParams.put("data", godotUser.ToDictionary());
+                    signalParams.put("data", godotUser.toDictionary());
                     emitGodotSignal("_on_firebase_user_signedIn", signalParams);
                 }
                 else{
-                    signalParams.put("status", 0);
                     signalParams.put("message", "User signed out successfully");
                     emitGodotSignal("_on_firebase_user_signedOut", signalParams);
                 }

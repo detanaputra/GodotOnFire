@@ -3,4 +3,5 @@
     <string name="status">status</string>
     <string name="message">message</string>
     <string name="data">data</string>
+    <string name="default_web_client_id">dummy</string>
 </resources>

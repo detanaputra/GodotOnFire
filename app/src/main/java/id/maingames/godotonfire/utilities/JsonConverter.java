@@ -40,4 +40,18 @@ public class JsonConverter {
             return null;
         }
     }
+
+    public static String dictToJson(Dictionary dict){
+        try{
+            return new Gson().toJson(dict);
+        }catch (Exception e){
+            Log.w(TAG, "Dictionary to Json:failed. " + e);
+            return null;
+        }
+    }
+
+    public static String toJson(Object obj){
+        String jsonStr = new Gson().toJson(obj);
+        return jsonStr;
+    }
 }
