@@ -54,7 +54,17 @@ public class GodotOnFire extends GodotPlugin {
     public void getFirebaseUser(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         GodotFirebaseUser godotUser = new GodotFirebaseUser(user);
-        emitGodotSignal("_on_got_firebase_user", godotUser.ToDictionary());
+        Dictionary signalParams = new Dictionary();
+        if (user != null){
+            signalParams.put("status", 0);
+            signalParams.put("message", "Firebase user obtained");
+        }
+        else{
+            signalParams.put("status", 1);
+            signalParams.put("message", "Firebase user is null. It might be because user is signed out");
+        }
+        signalParams.put("data", godotUser.ToDictionary());
+        emitGodotSignal("_on_got_firebase_user", signalParams);
     }
 
     @UsedByGodot
