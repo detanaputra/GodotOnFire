@@ -1,16 +1,15 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+
 buildscript {
-    dependencies{
-        //classpath "com.android.tools.build:gradle:4.0.0"
-        //classpath "com.android.tools.build:gradle:3.12.7"
+    dependencies {
+        classpath 'com.google.gms:google-services:4.3.15'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.5'
+        //classpath 'com.google.firebase:perf-plugin:1.4.2'
     }
 }
 
-allprojects {
-    dependencies{
-        //classpath "com.android.tools.build:gradle:4.0.0"
-    }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
+plugins {
+    id 'com.android.application' version '8.0.1' apply false
+    id 'com.android.library' version '8.0.1' apply false
 }
