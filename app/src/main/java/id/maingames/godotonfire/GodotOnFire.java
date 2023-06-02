@@ -1,6 +1,7 @@
 package id.maingames.godotonfire;
 
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.collection.ArraySet;
 
@@ -36,14 +37,27 @@ public class GodotOnFire extends GodotPlugin {
 
     @UsedByGodot
     public void init(){
-        AnonymousSignin.init(this, getActivity());
-        GoogleSignin.init(this, getActivity());
-        EmailSignin.init(this, getActivity());
-        listenAuthState();
-        RealtimeDatabase.init(this, getActivity());
-        Firestore.init(this, getActivity());
-        Analytics.init(this, getActivity());
-        RemoteConfig.init(this, getActivity());
+        Dictionary signalParams = new Dictionary();
+        try{
+            AnonymousSignin.init(this, getActivity());
+            GoogleSignin.init(this, getActivity());
+            EmailSignin.init(this, getActivity());
+            listenAuthState();
+            RealtimeDatabase.init(this, getActivity());
+            Firestore.init(this, getActivity());
+            Analytics.init(this, getActivity());
+            RemoteConfig.init(this, getActivity());
+
+            signalParams.put("status", 0);
+            signalParams.put("message", "GodotOnFire initiated successfully");
+            emitGodotSignal("_on_godotonfire_initiated", signalParams);
+        }
+        catch (Exception e){
+            signalParams.put("status", 1);
+            signalParams.put("message", "GodotOnFire initiating has failed");
+            Log.e(getPluginName(), "GodotOnFire initiating has failed: " + e.getLocalizedMessage(), e);
+            emitGodotSignal("_on_godotonfire_initiated", signalParams);
+        }
     }
 
     public void emitGodotSignal(String signalName, Object... signalArgs){
@@ -83,7 +97,7 @@ public class GodotOnFire extends GodotPlugin {
                 if (user != null){
                     signalParams.put("message", "User signed in successfully");
                     GodotFirebaseUser godotUser = new GodotFirebaseUser(user);
-                    signalParams.put("data", godotUser.toDictionary());
+                    signalParams.put("data", godotUser.toJson());
                     emitGodotSignal("_on_firebase_user_signedIn", signalParams);
                 }
                 else{
@@ -221,7 +235,7 @@ public class GodotOnFire extends GodotPlugin {
         return getActivity().getString(R.string.app_name);
     }
 
-    @NonNull
+    /*@NonNull
     @Override
     public List<String> getPluginMethods() {
         return Arrays.asList(
@@ -233,12 +247,14 @@ public class GodotOnFire extends GodotPlugin {
             ,"remoteConfigFetch", "remoteConfigActivate", "remoteConfigFetchAndActivate", "remoteConfigGetString"
             , "remoteConfigGetLong", "remoteConfigGetBoolean", "remoteConfigGetDouble"
         );
-    }
+    }*/
 
     @NonNull
     @Override
     public Set<SignalInfo> getPluginSignals() {
         Set<SignalInfo> signals = new ArraySet<>();
+
+        signals.add(new SignalInfo("_on_godotonfire_initiated", Dictionary.class));
 
         signals.add(new SignalInfo("_on_got_firebase_user", Dictionary.class));
         signals.add(new SignalInfo("_on_firebase_user_signedIn", Dictionary.class));
