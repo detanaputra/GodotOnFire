@@ -7,21 +7,20 @@
  */
 
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
-    id 'com.android.library'
-}
-
-repositories {
-    // Use Maven Central for resolving dependencies.
-    mavenCentral()
+    //Apply the application plugin to add support for building a CLI application in Java.
+    id 'com.android.library' version '7.1.2' apply false
 }
 
 dependencies {
+    implementation "androidx.legacy:legacy-support-v4:1.0.0"
+    // This dependency is used by the application.
+    implementation 'com.google.guava:guava:31.1-jre'
+    // godot aar dependency
+    //implementation files('libs/godot-lib.3.5.2.stable.mono.release.aar')
+    compileOnly fileTree(dir: 'libs', include: ['godot-lib*.aar'])
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
 
-    // This dependency is used by the application.
-    implementation 'com.google.guava:guava:31.1-jre'
 }
 
 application {
