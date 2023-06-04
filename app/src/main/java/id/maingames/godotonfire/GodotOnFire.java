@@ -16,8 +16,6 @@ import org.godotengine.godot.plugin.GodotPlugin;
 import org.godotengine.godot.plugin.SignalInfo;
 import org.godotengine.godot.plugin.UsedByGodot;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 import id.maingames.godotonfire.analytics.Analytics;
@@ -60,10 +58,11 @@ public class GodotOnFire extends GodotPlugin {
         }
     }
 
-    public void emitGodotSignal(String signalName, Object... signalArgs){
+    public void emitGodotSignal(String signalName, Dictionary signalArgs){
         emitSignal(signalName, signalArgs);
     }
 
+    // TODO
     @UsedByGodot
     public void getFirebaseUser(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -87,6 +86,7 @@ public class GodotOnFire extends GodotPlugin {
         auth.signOut();
     }
 
+    // TODO
     private void listenAuthState(){
         FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
@@ -143,25 +143,73 @@ public class GodotOnFire extends GodotPlugin {
         EmailSignin.getInstance().sendEmailVerification();
     }
 
+    // Realtime Database region
     @UsedByGodot
-    public void databaseWriteUserData(String collName, String jsonString){
-        RealtimeDatabase.getInstance().WriteUserData(collName, jsonString);
+    public void databaseSetUserData(String collName, String jsonString){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null){
+            RealtimeDatabase.getInstance().set(collName, jsonString, user.getUid());
+        }
+    }
+
+    @UsedByGodot
+    public void databaseSetData(String collName, String jsonString){
+        RealtimeDatabase.getInstance().set(collName, jsonString, null);
+    }
+
+    @UsedByGodot
+    public void databasePushUserData(String collName, String jsonString){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null){
+            RealtimeDatabase.getInstance().push(collName, jsonString, user.getUid());
+        }
+    }
+
+    @UsedByGodot
+    public void databasePushData(String collName, String jsonString){
+        RealtimeDatabase.getInstance().push(collName, jsonString, null);
     }
 
     @UsedByGodot
     public void databaseUpdateUserData(String collName, String jsonString){
-        RealtimeDatabase.getInstance().UpdateUserData(collName, jsonString);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null){
+            RealtimeDatabase.getInstance().update(collName, jsonString, user.getUid());
+        }
     }
 
     @UsedByGodot
-    public void databaseReadUserData(String collName){
-        RealtimeDatabase.getInstance().ReadUserData(collName);
+    public void databaseUpdateData(String collName, String jsonString){
+        RealtimeDatabase.getInstance().update(collName, jsonString, null);
     }
 
     @UsedByGodot
-    public void databaseDeleteUserData(String collName){
-        RealtimeDatabase.getInstance().DeleteUserData(collName);
+    public void databaseGetUserData(String collName){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null){
+            RealtimeDatabase.getInstance().get(collName, user.getUid());
+        }
     }
+
+    @UsedByGodot
+    public void databaseGetData(String collName){
+        RealtimeDatabase.getInstance().get(collName, null);
+    }
+
+    @UsedByGodot
+    public void databaseRemoveUserData(String collName){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null){
+            RealtimeDatabase.getInstance().remove(collName, user.getUid());
+        }
+    }
+
+    @UsedByGodot
+    public void databaseRemoveData(String collName){
+        RealtimeDatabase.getInstance().remove(collName, null);
+    }
+
+    // Realtime Database end region
 
     @UsedByGodot
     public void firestoreWriteUserData(String collName, String jsonString){
@@ -235,21 +283,7 @@ public class GodotOnFire extends GodotPlugin {
         return getActivity().getString(R.string.app_name);
     }
 
-    /*@NonNull
-    @Override
-    public List<String> getPluginMethods() {
-        return Arrays.asList(
-            "init", "signOut", "signinAnonymously", "signinGoogle", "linkAccountWithGoogle", "getFirebaseUser"
-            , "signUpWithEmail", "signInWithEmail", "linkAccountWithEmail", "sendEmailVerification"
-            , "databaseWriteUserData", "databaseUpdateUserData", "databaseReadUserData", "databaseDeleteUserData"
-            , "firestoreWriteUserData", "firestoreUpdateUserData", "firestoreReadUserData", "firestoreDeleteUserData"
-            , "logEvent", "testCrash"
-            ,"remoteConfigFetch", "remoteConfigActivate", "remoteConfigFetchAndActivate", "remoteConfigGetString"
-            , "remoteConfigGetLong", "remoteConfigGetBoolean", "remoteConfigGetDouble"
-        );
-    }*/
-
-    @NonNull
+     @NonNull
     @Override
     public Set<SignalInfo> getPluginSignals() {
         Set<SignalInfo> signals = new ArraySet<>();
@@ -266,19 +300,20 @@ public class GodotOnFire extends GodotPlugin {
         signals.add(new SignalInfo("_on_signin_email_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_send_email_verification_completed", Dictionary.class));
 
-        signals.add(new SignalInfo("_on_database_write_completed", Dictionary.class));
-        signals.add(new SignalInfo("_on_database_update_completed", Dictionary.class));
-        signals.add(new SignalInfo("_on_database_read_completed", Dictionary.class));
-        signals.add(new SignalInfo("_on_database_delete_completed", Dictionary.class));
+        signals.add(new SignalInfo("_database_set_completed", Dictionary.class));
+        signals.add(new SignalInfo("_database_push_completed", Dictionary.class));
+        signals.add(new SignalInfo("_database_update_completed", Dictionary.class));
+        signals.add(new SignalInfo("_database_get_completed", Dictionary.class));
+        signals.add(new SignalInfo("_database_remove_completed", Dictionary.class));
 
         signals.add(new SignalInfo("_on_firestore_write_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_firestore_update_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_firestore_read_completed", Dictionary.class));
         signals.add(new SignalInfo("_on_firestore_delete_completed", Dictionary.class));
 
-        signals.add(new SignalInfo("_on_remote_config_fetched", Dictionary.class));
-        signals.add(new SignalInfo("_on_remote_config_activated", Dictionary.class));
-        signals.add(new SignalInfo("_on_remote_config_got_value", Dictionary.class));
+        signals.add(new SignalInfo("_remote_config_fetch_completed", Dictionary.class));
+        signals.add(new SignalInfo("_remote_config_activate_completed", Dictionary.class));
+        signals.add(new SignalInfo("_remote_config_get_value_completed", Dictionary.class));
         return signals;
     }
 }
