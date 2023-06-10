@@ -46,6 +46,9 @@ public class Analytics{
                 if(entry.getValue() instanceof Double){
                     bundle.putDouble(entry.getKey(), (Double)entry.getValue());
                 }
+                else if(entry.getValue() instanceof Boolean){
+                    bundle.putBoolean(entry.getKey(), (Boolean)entry.getValue());
+                }
                 else{
                     bundle.putString(entry.getKey(), (String)entry.getValue());
                 }

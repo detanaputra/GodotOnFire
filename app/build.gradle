@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'com.google.firebase.crashlytics'
-    // gms and firebase-perf applied on build.gradle in Godot android project
+    // gms and firebase-perf is sapplied on build.gradle in Godot android project
     //id 'com.google.gms.google-services'
     //id 'com.google.firebase.firebase-perf'
 }

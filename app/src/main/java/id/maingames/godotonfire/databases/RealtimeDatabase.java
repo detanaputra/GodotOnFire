@@ -62,12 +62,13 @@ public class RealtimeDatabase {
         return instance;
     }
 
-    public void set(String collName, String jsonString, String Uid){
+    public void set(String collName, String jsonString, Boolean isUserData){
         String signalName = "_database_set_completed";
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
-        if (!isUserSignedIn()){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null){
             signalParams.Status = 1;
             signalParams.Message = "Firebase user is null";
             Log.e(TAG,  className + method + "has failed. Firebase user is null, user might be signed out.");
@@ -82,8 +83,8 @@ public class RealtimeDatabase {
             godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
-        if(Uid != null && !Uid.trim().isEmpty()){
-            dbRef.child(collName).child(Uid);
+        if(isUserData){
+            dbRef.child(collName).child(user.getUid());
         }
         else{
             dbRef.child(collName);
@@ -110,12 +111,13 @@ public class RealtimeDatabase {
 
     }
 
-    public void push(String collName, String jsonString, String Uid){
+    public void push(String collName, String jsonString, Boolean isUserData){
         String signalName = "_database_push_completed";
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
-        if (!isUserSignedIn()){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null){
             signalParams.Status = 1;
             signalParams.Message = "Firebase user is null";
             Log.e(TAG,  className + method + "has failed. Firebase user is null, user might be signed out.");
@@ -130,8 +132,8 @@ public class RealtimeDatabase {
             godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
-        if(Uid != null && !Uid.trim().isEmpty()){
-            dbRef.child(collName).child(Uid);
+        if(isUserData){
+            dbRef.child(collName).child(user.getUid());
         }
         else{
             dbRef.child(collName);
@@ -158,12 +160,13 @@ public class RealtimeDatabase {
 
     }
 
-    public void update(String collName, String jsonString, String Uid){
+    public void update(String collName, String jsonString, Boolean isUserData){
         String signalName = "_database_update_completed";
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
-        if (!isUserSignedIn()){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null){
             signalParams.Status = 1;
             signalParams.Message = "Firebase user is null";
             Log.e(TAG,  className + method + "has failed. Firebase user is null, user might be signed out.");
@@ -178,8 +181,8 @@ public class RealtimeDatabase {
             godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
-        if(Uid != null && !Uid.trim().isEmpty()){
-            dbRef.child(collName).child(Uid);
+        if(isUserData){
+            dbRef.child(collName).child(user.getUid());
         }
         else{
             dbRef.child(collName);
@@ -205,20 +208,21 @@ public class RealtimeDatabase {
                 });
     }
 
-    public void get(String collName, String Uid){
+    public void get(String collName, Boolean isUserData){
         String signalName = "_database_get_completed";
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
-        if (!isUserSignedIn()){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null){
             signalParams.Status = 1;
             signalParams.Message = "Firebase user is null";
             Log.e(TAG,  className + method + "has failed. Firebase user is null, user might be signed out.");
             godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
-        if(Uid != null && !Uid.trim().isEmpty()){
-            dbRef.child(collName).child(Uid);
+        if(isUserData){
+            dbRef.child(collName).child(user.getUid());
         }
         else{
             dbRef.child(collName);
@@ -257,20 +261,21 @@ public class RealtimeDatabase {
             });
     }
 
-    public void remove(String collName, String Uid){
+    public void remove(String collName, Boolean isUserData){
         String signalName = "_database_remove_completed";
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
-        if (!isUserSignedIn()){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null){
             signalParams.Status = 1;
             signalParams.Message = "Firebase user is null";
             Log.e(TAG,  className + method + "has failed. Firebase user is null, user might be signed out.");
             godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
-        if(Uid != null && !Uid.trim().isEmpty()){
-            dbRef.child(collName).child(Uid);
+        if(isUserData){
+            dbRef.child(collName).child(user.getUid());
         }
         else{
             dbRef.child(collName);
@@ -294,10 +299,4 @@ public class RealtimeDatabase {
             }
         });
     }
-
-    private Boolean isUserSignedIn(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        return user != null;
-    }
-
 }

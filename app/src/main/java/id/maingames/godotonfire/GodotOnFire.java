@@ -146,67 +146,52 @@ public class GodotOnFire extends GodotPlugin {
     // Realtime Database region
     @UsedByGodot
     public void databaseSetUserData(String collName, String jsonString){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null){
-            RealtimeDatabase.getInstance().set(collName, jsonString, user.getUid());
-        }
+        RealtimeDatabase.getInstance().set(collName, jsonString, true);
     }
 
     @UsedByGodot
     public void databaseSetData(String collName, String jsonString){
-        RealtimeDatabase.getInstance().set(collName, jsonString, null);
+        RealtimeDatabase.getInstance().set(collName, jsonString, false);
     }
 
     @UsedByGodot
     public void databasePushUserData(String collName, String jsonString){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null){
-            RealtimeDatabase.getInstance().push(collName, jsonString, user.getUid());
-        }
+        RealtimeDatabase.getInstance().push(collName, jsonString, true);
     }
 
     @UsedByGodot
     public void databasePushData(String collName, String jsonString){
-        RealtimeDatabase.getInstance().push(collName, jsonString, null);
+        RealtimeDatabase.getInstance().push(collName, jsonString, false);
     }
 
     @UsedByGodot
     public void databaseUpdateUserData(String collName, String jsonString){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null){
-            RealtimeDatabase.getInstance().update(collName, jsonString, user.getUid());
-        }
+        RealtimeDatabase.getInstance().update(collName, jsonString, true);
     }
 
     @UsedByGodot
     public void databaseUpdateData(String collName, String jsonString){
-        RealtimeDatabase.getInstance().update(collName, jsonString, null);
+        RealtimeDatabase.getInstance().update(collName, jsonString, false);
     }
 
     @UsedByGodot
     public void databaseGetUserData(String collName){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null){
-            RealtimeDatabase.getInstance().get(collName, user.getUid());
-        }
+        RealtimeDatabase.getInstance().get(collName, true);
     }
 
     @UsedByGodot
     public void databaseGetData(String collName){
-        RealtimeDatabase.getInstance().get(collName, null);
+        RealtimeDatabase.getInstance().get(collName, false);
     }
 
     @UsedByGodot
     public void databaseRemoveUserData(String collName){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null){
-            RealtimeDatabase.getInstance().remove(collName, user.getUid());
-        }
+        RealtimeDatabase.getInstance().remove(collName, true);
     }
 
     @UsedByGodot
     public void databaseRemoveData(String collName){
-        RealtimeDatabase.getInstance().remove(collName, null);
+        RealtimeDatabase.getInstance().remove(collName, false);
     }
 
     // Realtime Database end region
