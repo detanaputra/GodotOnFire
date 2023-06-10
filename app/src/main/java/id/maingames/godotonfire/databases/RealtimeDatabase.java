@@ -22,7 +22,7 @@ import id.maingames.godotonfire.utilities.JsonConverter;
 import id.maingames.godotonfire.utilities.SignalParams;
 
 /**
- * This is a class reference to interact with Firebase Realtime Database.
+ * This is a class to interact with Firebase Realtime Database.
  *
  * Signals:
  * _database_set_completed
@@ -94,8 +94,8 @@ public class RealtimeDatabase {
                 @Override
                 public void onSuccess(Void aVoid) {
                     signalParams.Status = 0;
-                    signalParams.Message = "Database set value has succeed";
-                    Log.d(TAG, className + method + "has succeed");
+                    signalParams.Message = "Database set value is successful";
+                    Log.d(TAG, className + method + "is successful");
                     godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
                 }
             })
@@ -143,8 +143,8 @@ public class RealtimeDatabase {
                     @Override
                     public void onSuccess(Void aVoid) {
                         signalParams.Status = 0;
-                        signalParams.Message = "Database set value has succeed";
-                        Log.d(TAG, className + method + "has succeed");
+                        signalParams.Message = "Database set value is successful";
+                        Log.d(TAG, className + method + "is successful");
                         godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
                     }
                 })
@@ -192,8 +192,8 @@ public class RealtimeDatabase {
                     @Override
                     public void onSuccess(Void aVoid) {
                         signalParams.Status = 0;
-                        signalParams.Message = "Database update value has succeed";
-                        Log.d(TAG, className + method + "has succeed");
+                        signalParams.Message = "Database update value is successful";
+                        Log.d(TAG, className + method + "is successful");
                         godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
                     }
                 })
@@ -235,9 +235,9 @@ public class RealtimeDatabase {
                         Map<String, Object> obj = (Map<String, Object>)dataSnapshot.getValue();
                         String data = JsonConverter.mapToJson(obj);
                         signalParams.Status = 0;
-                        signalParams.Message = "Database read has succeed";
+                        signalParams.Message = "Database read is successful";
                         signalParams.Data = data;
-                        Log.d(TAG, "Database read has succeed");
+                        Log.d(TAG, "Database read is successful");
                         godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
                     } catch (Exception e){
                         Log.e(TAG,  className + method + "has failed. " + e.getLocalizedMessage());
@@ -284,8 +284,8 @@ public class RealtimeDatabase {
             @Override
             public void onSuccess(Void aVoid) {
                 signalParams.Status = 0;
-                signalParams.Message = "Database delete has succeed";
-                Log.d(TAG, className + method + "has succeed");
+                signalParams.Message = "Database delete is successful";
+                Log.d(TAG, className + method + "is successful");
                 godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             }
         })

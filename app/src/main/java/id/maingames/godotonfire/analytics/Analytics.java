@@ -60,6 +60,10 @@ public class Analytics{
                 Log.e(TAG, eventName + " logging failed");
             }
         }
+    }
 
+    public void setUserProperty(String propertyName, String value){
+        mFirebaseAnalytics.setUserProperty(propertyName, value);
+        Log.d(TAG, propertyName + " set");
     }
 }
