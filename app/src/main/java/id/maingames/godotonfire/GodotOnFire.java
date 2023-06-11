@@ -26,6 +26,7 @@ import id.maingames.godotonfire.authentications.GoogleSignin;
 import id.maingames.godotonfire.databases.RealtimeDatabase;
 import id.maingames.godotonfire.firestores.Firestore;
 import id.maingames.godotonfire.remoteConfigs.RemoteConfig;
+import id.maingames.godotonfire.utilities.SignalParams;
 
 public class GodotOnFire extends GodotPlugin {
 
@@ -35,7 +36,7 @@ public class GodotOnFire extends GodotPlugin {
 
     @UsedByGodot
     public void init(){
-        String signalName = "_godotonfire_initiated";
+        String signalName = getActivity().getString(R.string.GOF_godotonfire_initiated);
         Dictionary signalParams = new Dictionary();
         try{
             AnonymousSignin.init(this, getActivity());
@@ -63,22 +64,24 @@ public class GodotOnFire extends GodotPlugin {
         emitSignal(signalName, signalArgs);
     }
 
-    // TODO
     @UsedByGodot
     public void getFirebaseUser(){
+        String className = getClass().getSimpleName() + " ";
+        String method = getClass().getEnclosingMethod().getName() + " ";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         GodotFirebaseUser godotUser = new GodotFirebaseUser(user);
-        Dictionary signalParams = new Dictionary();
+        SignalParams signalParams = new SignalParams();
         if (user != null){
-            signalParams.put("status", 0);
-            signalParams.put("message", "Firebase user obtained");
+            signalParams.Status = 0;
+            signalParams.Message = "Firebase user obtained";
         }
         else{
-            signalParams.put("status", 1);
-            signalParams.put("message", "Firebase user is null. It might be because user is signed out");
+            Log.e(getPluginName(),  className + method + "has failed. Firebase user is null, user might be signed out.");
+            signalParams.Status = 1;
+            signalParams.Message = "Firebase user is null. It might be because user is signed out";
         }
-        signalParams.put("data", godotUser.toJson());
-        emitGodotSignal("_on_got_firebase_user", signalParams);
+        signalParams.Data = godotUser.toJson();
+        emitGodotSignal(getActivity().getString(R.string.GOF_got_firebase_user), signalParams.toDictionary());
     }
 
     @UsedByGodot
@@ -99,24 +102,24 @@ public class GodotOnFire extends GodotPlugin {
                     signalParams.put("message", "User signed in successfully");
                     GodotFirebaseUser godotUser = new GodotFirebaseUser(user);
                     signalParams.put("data", godotUser.toJson());
-                    emitGodotSignal("_on_firebase_user_signedIn", signalParams);
+                    emitGodotSignal(getActivity().getString(R.string.GOF_firebase_user_signed_in), signalParams);
                 }
                 else{
                     signalParams.put("message", "User signed out successfully");
-                    emitGodotSignal("_on_firebase_user_signedOut", signalParams);
+                    emitGodotSignal(getActivity().getString(R.string.GOF_firebase_user_signed_out), signalParams);
                 }
             }
         });
     }
 
     @UsedByGodot
-    public void signinAnonymously(){
+    public void signInAnonymously(){
         AnonymousSignin.getInstance().signIn();
     }
 
     @UsedByGodot
-    public void signinGoogle(){
-        GoogleSignin.getInstance().signin();
+    public void signInGoogle(){
+        GoogleSignin.getInstance().signIn();
     }
 
     @UsedByGodot
@@ -131,7 +134,7 @@ public class GodotOnFire extends GodotPlugin {
 
     @UsedByGodot
     public void signInWithEmail(String email, String password){
-        EmailSignin.getInstance().signin(email, password);
+        EmailSignin.getInstance().signIn(email, password);
     }
 
     @UsedByGodot
@@ -295,41 +298,40 @@ public class GodotOnFire extends GodotPlugin {
     @NonNull
     @Override
     public String getPluginName() {
-        return getActivity().getString(R.string.app_name);
+        return "GodotOnFire";
     }
 
      @NonNull
     @Override
     public Set<SignalInfo> getPluginSignals() {
         Set<SignalInfo> signals = new ArraySet<>();
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_godotonfire_initiated), Dictionary.class));
 
-        signals.add(new SignalInfo("_godotonfire_initiated", Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_got_firebase_user), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_firebase_user_signed_in), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_firebase_user_signed_out), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_sign_in_anonymously_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_google_sign_in_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_link_account_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_sign_up_email_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_sign_in_email_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_send_email_verification_completed), Dictionary.class));
 
-        signals.add(new SignalInfo("_on_got_firebase_user", Dictionary.class));
-        signals.add(new SignalInfo("_on_firebase_user_signedIn", Dictionary.class));
-        signals.add(new SignalInfo("_on_firebase_user_signedOut", Dictionary.class));
-        signals.add(new SignalInfo("_on_signin_anonymously_completed", Dictionary.class));
-        signals.add(new SignalInfo("_on_google_signin_completed", Dictionary.class));
-        signals.add(new SignalInfo("_on_link_account_completed", Dictionary.class));
-        signals.add(new SignalInfo("_on_signup_email_completed", Dictionary.class));
-        signals.add(new SignalInfo("_on_signin_email_completed", Dictionary.class));
-        signals.add(new SignalInfo("_on_send_email_verification_completed", Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_database_set_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_database_push_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_database_update_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_database_get_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_database_remove_completed), Dictionary.class));
 
-        signals.add(new SignalInfo("_database_set_completed", Dictionary.class));
-        signals.add(new SignalInfo("_database_push_completed", Dictionary.class));
-        signals.add(new SignalInfo("_database_update_completed", Dictionary.class));
-        signals.add(new SignalInfo("_database_get_completed", Dictionary.class));
-        signals.add(new SignalInfo("_database_remove_completed", Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_firestore_set_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_firestore_add_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_firestore_update_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_firestore_read_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_firestore_delete_completed), Dictionary.class));
 
-        signals.add(new SignalInfo("_firestore_set_completed", Dictionary.class));
-        signals.add(new SignalInfo("_firestore_add_completed", Dictionary.class));
-        signals.add(new SignalInfo("_firestore_update_completed", Dictionary.class));
-        signals.add(new SignalInfo("_firestore_read_completed", Dictionary.class));
-        signals.add(new SignalInfo("_firestore_delete_completed", Dictionary.class));
-
-        signals.add(new SignalInfo("_remote_config_fetch_completed", Dictionary.class));
-        signals.add(new SignalInfo("_remote_config_activate_completed", Dictionary.class));
-        signals.add(new SignalInfo("_remote_config_get_value_completed", Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_remote_config_fetch_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_remote_config_activate_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_remote_config_get_value_completed), Dictionary.class));
         return signals;
     }
 }

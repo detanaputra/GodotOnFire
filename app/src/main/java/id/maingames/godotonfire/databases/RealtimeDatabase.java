@@ -18,6 +18,7 @@ import org.godotengine.godot.Dictionary;
 import java.util.Map;
 
 import id.maingames.godotonfire.GodotOnFire;
+import id.maingames.godotonfire.R;
 import id.maingames.godotonfire.utilities.JsonConverter;
 import id.maingames.godotonfire.utilities.SignalParams;
 
@@ -63,7 +64,7 @@ public class RealtimeDatabase {
     }
 
     public void set(String collName, String jsonString, Boolean isUserData){
-        String signalName = "_database_set_completed";
+        String signalName = godotActivity.getString(R.string.GOF_database_set_completed);
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
@@ -112,7 +113,7 @@ public class RealtimeDatabase {
     }
 
     public void push(String collName, String jsonString, Boolean isUserData){
-        String signalName = "_database_push_completed";
+        String signalName = godotActivity.getString(R.string.GOF_database_push_completed);;
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
@@ -161,7 +162,7 @@ public class RealtimeDatabase {
     }
 
     public void update(String collName, String jsonString, Boolean isUserData){
-        String signalName = "_database_update_completed";
+        String signalName = godotActivity.getString(R.string.GOF_database_update_completed);;
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
@@ -209,7 +210,7 @@ public class RealtimeDatabase {
     }
 
     public void get(String collName, Boolean isUserData){
-        String signalName = "_database_get_completed";
+        String signalName = godotActivity.getString(R.string.GOF_database_get_completed);;
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
@@ -262,7 +263,7 @@ public class RealtimeDatabase {
     }
 
     public void remove(String collName, Boolean isUserData){
-        String signalName = "_database_remove_completed";
+        String signalName = godotActivity.getString(R.string.GOF_database_remove_completed);
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();

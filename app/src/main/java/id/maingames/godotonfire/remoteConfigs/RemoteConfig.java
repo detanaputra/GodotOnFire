@@ -16,6 +16,7 @@ import org.godotengine.godot.Dictionary;
 import java.util.Map;
 
 import id.maingames.godotonfire.GodotOnFire;
+import id.maingames.godotonfire.R;
 import id.maingames.godotonfire.utilities.JsonConverter;
 import id.maingames.godotonfire.utilities.SignalParams;
 
@@ -56,7 +57,7 @@ public class RemoteConfig {
     }
 
     public void fetch(){
-        String signalName = "_remote_config_fetch_completed";
+        String signalName = godotActivity.getString(R.string.GOF_remote_config_fetch_completed);
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
@@ -82,7 +83,7 @@ public class RemoteConfig {
     }
 
     public void activate(){
-        String signalName = "_remote_config_activate_completed";
+        String signalName = godotActivity.getString(R.string.GOF_remote_config_activate_completed);
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
@@ -108,7 +109,7 @@ public class RemoteConfig {
     }
 
     public void fetchAndActivate(){
-        String signalName = "_remote_config_activate_completed";
+        String signalName = godotActivity.getString(R.string.GOF_remote_config_activate_completed);
         String className = getClass().getSimpleName() + " ";
         String method = getClass().getEnclosingMethod().getName() + " ";
         SignalParams signalParams = new SignalParams();
@@ -189,7 +190,7 @@ public class RemoteConfig {
             signalParams.Message = String.format("Getting %s value from remote config has failed", key);
             Log.e(TAG, "Getting value from remote config has failed. " + tr.getLocalizedMessage(), tr);
         }
-        godotOnFire.emitGodotSignal("_remote_config_get_value_completed", signalParams.toDictionary());
+        godotOnFire.emitGodotSignal(godotActivity.getString(R.string.GOF_remote_config_get_value_completed), signalParams.toDictionary());
     }
 
 

@@ -1,7 +1,31 @@
 <resources>
-    <string name="app_name">GodotOnFire</string>
-    <string name="status">status</string>
-    <string name="message">message</string>
-    <string name="data">data</string>
+    <string name="GOF_godotonfire_initiated">_godotonfire_initiated</string>
+
+    <string name="GOF_got_firebase_user">_got_firebase_user</string>
+    <string name="GOF_firebase_user_signed_in">_firebase_user_signed_in</string>
+    <string name="GOF_firebase_user_signed_out">_firebase_user_signed_out</string>
+    <string name="GOF_sign_in_anonymously_completed">_sign_in_anonymously_completed</string>
+    <string name="GOF_google_sign_in_completed">_google_sign_in_completed</string>
+    <string name="GOF_link_account_completed">_link_account_completed</string>
+    <string name="GOF_sign_up_email_completed">_sign_up_email_completed</string>
+    <string name="GOF_sign_in_email_completed">_sign_in_email_completed</string>
+    <string name="GOF_send_email_verification_completed">_send_email_verification_completed</string>
+
+    <string name="GOF_database_set_completed">_database_set_completed</string>
+    <string name="GOF_database_push_completed">_database_push_completed</string>
+    <string name="GOF_database_update_completed">_database_update_completed</string>
+    <string name="GOF_database_get_completed">_database_get_completed</string>
+    <string name="GOF_database_remove_completed">_database_remove_completed</string>
+
+    <string name="GOF_firestore_set_completed">_firestore_set_completed</string>
+    <string name="GOF_firestore_add_completed">_firestore_add_completed</string>
+    <string name="GOF_firestore_update_completed">_firestore_update_completed</string>
+    <string name="GOF_firestore_read_completed">_firestore_read_completed</string>
+    <string name="GOF_firestore_delete_completed">_firestore_delete_completed</string>
+
+    <string name="GOF_remote_config_fetch_completed">_remote_config_fetch_completed</string>
+    <string name="GOF_remote_config_activate_completed">_remote_config_activate_completed</string>
+    <string name="GOF_remote_config_get_value_completed">_remote_config_get_value_completed</string>
+
     <string name="default_web_client_id">dummy</string>
 </resources>

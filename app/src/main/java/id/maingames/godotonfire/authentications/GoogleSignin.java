@@ -29,11 +29,14 @@ import org.godotengine.godot.Dictionary;
 
 import id.maingames.godotonfire.GodotOnFire;
 import id.maingames.godotonfire.R;
+import id.maingames.godotonfire.utilities.SignalParams;
 
 public class GoogleSignin {
     private static String TAG = "";
     public static final int RC_SIGN_IN = 9001;
     public static final int RC_LINK = 9002;
+    private static String signInSignalName;
+    private static String linkSignalName;
     private static GoogleSignin instance;
 
     private GodotOnFire godotOnFire;
@@ -49,6 +52,8 @@ public class GoogleSignin {
     public static void init(GodotOnFire _godotOnFire, Activity _godotActivity){
         instance = new GoogleSignin();
         TAG = _godotOnFire.getPluginName();
+        signInSignalName = _godotActivity.getString(R.string.GOF_google_sign_in_completed);
+        linkSignalName = _godotActivity.getString(R.string.GOF_link_account_completed);
         instance.godotOnFire = _godotOnFire;
         instance.godotActivity = _godotActivity;
         instance.mAuth = FirebaseAuth.getInstance();
@@ -81,22 +86,22 @@ public class GoogleSignin {
         return instance;
     }
 
-    public void signup(){
-        Log.d(TAG, "Launching google One Tap Signup");
-        Dictionary signalParams = new Dictionary();
+    private void signUp(){
+        Log.d(TAG, "Launching google One Tap Sign Up");
+        SignalParams signalParams = new SignalParams();
         oneTapClient.beginSignIn(signUpRequest)
                 .addOnSuccessListener(godotActivity, new OnSuccessListener<BeginSignInResult>() {
                     @Override
                     public void onSuccess(BeginSignInResult beginSignInResult) {
                         try {
-                            Log.d(TAG, "One Tap signin success, sending sign up intent..");
+                            Log.d(TAG, "One Tap Sign In success, sending sign up intent..");
                             godotActivity.startIntentSenderForResult(beginSignInResult.getPendingIntent().getIntentSender(), RC_SIGN_IN, null, 0,0,0);
                         } catch (IntentSender.SendIntentException e) {
                             Log.e(TAG, "Couldn't sending intent: " + e.getLocalizedMessage(), e);
-                            signalParams.put("status", 1);
-                            signalParams.put("message", "Begin sign in request has failed and couldn't sending intent");
-                            signalParams.put("data", new GodotFirebaseUser(null).toJson());
-                            godotOnFire.emitGodotSignal("_on_google_signin_completed", signalParams);
+                            signalParams.Status = 1;
+                            signalParams.Message = "Begin sign in request has failed and couldn't sending intent";
+                            signalParams.Data = new GodotFirebaseUser(null).toJson();
+                            godotOnFire.emitGodotSignal(signInSignalName, signalParams.toDictionary());
                         }
                     }
                 })
@@ -104,30 +109,30 @@ public class GoogleSignin {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.e(TAG, "Sign up request has failed: " + e.getLocalizedMessage(), e);
-                        signalParams.put("status", 1);
-                        signalParams.put("message", "Begin sign up request has failed and couldn't sending intent");
-                        signalParams.put("data", new GodotFirebaseUser(null).toJson());
-                        godotOnFire.emitGodotSignal("_on_google_signin_completed", signalParams);
+                        signalParams.Status = 1;
+                        signalParams.Message = "Begin sign up request has failed and couldn't sending intent";
+                        signalParams.Data = new GodotFirebaseUser(null).toJson();
+                        godotOnFire.emitGodotSignal(signInSignalName, signalParams.toDictionary());
                     }
                 });
     }
 
-    public void signin(){
-        Log.d(TAG, "Launching google One Tap Signin");
-        Dictionary signalParams = new Dictionary();
+    public void signIn(){
+        Log.d(TAG, "Launching google One Tap Sign In");
+        SignalParams signalParams = new SignalParams();
         oneTapClient.beginSignIn(signInRequest)
                 .addOnSuccessListener(godotActivity, new OnSuccessListener<BeginSignInResult>() {
                     @Override
                     public void onSuccess(BeginSignInResult beginSignInResult) {
                         try {
-                            Log.d(TAG, "One Tap signin success, sending sign in intent..");
+                            Log.d(TAG, "One Tap Sign In success, sending sign in intent..");
                             godotActivity.startIntentSenderForResult(beginSignInResult.getPendingIntent().getIntentSender(), RC_SIGN_IN, null, 0,0,0);
                         } catch (IntentSender.SendIntentException e) {
                             Log.e(TAG, "Couldn't sending intent: " + e.getLocalizedMessage(), e);
-                            signalParams.put("status", 1);
-                            signalParams.put("message", "Begin sign in request has failed and couldn't sending intent");
-                            signalParams.put("data", new GodotFirebaseUser(null).toJson());
-                            godotOnFire.emitGodotSignal("_on_google_signin_completed", signalParams);
+                            signalParams.Status = 1;
+                            signalParams.Message = "Begin sign in request has failed and couldn't sending intent";
+                            signalParams.Data = new GodotFirebaseUser(null).toJson();
+                            godotOnFire.emitGodotSignal(signInSignalName, signalParams.toDictionary());
                         }
                     }
                 })
@@ -138,27 +143,27 @@ public class GoogleSignin {
                         // do nothing and continue presenting the signed-out UI.
                         Log.w(TAG, "sign in request has failed. It might be because user hasn't sign up to your game. This behaviour is expected. " + e.getLocalizedMessage(), e);
                         Log.d(TAG, "Sending sign up request ...  ");
-                        signup();
+                        signUp();
                     }
                 });
     }
 
     public void linkAccount(){
-        Log.d(TAG, "Launching google One Tap Signin");
-        Dictionary signalParams = new Dictionary();
+        Log.d(TAG, "Launching google One Tap Sign In");
+        SignalParams signalParams = new SignalParams();
         oneTapClient.beginSignIn(signInRequest)
                 .addOnSuccessListener(godotActivity, new OnSuccessListener<BeginSignInResult>() {
                     @Override
                     public void onSuccess(BeginSignInResult beginSignInResult) {
                         try {
-                            Log.d(TAG, "One Tap signin success, sending intent..");
+                            Log.d(TAG, "One Tap Sign In success, sending intent..");
                             godotActivity.startIntentSenderForResult(beginSignInResult.getPendingIntent().getIntentSender(), RC_LINK, null, 0,0,0);
                         } catch (IntentSender.SendIntentException e) {
                             Log.e(TAG, "Couldn't sending intent: " + e.getLocalizedMessage(), e);
-                            signalParams.put("status", 1);
-                            signalParams.put("message", "Begin sign in request has failed and couldn't sending intent");
-                            signalParams.put("data", new GodotFirebaseUser(null).toJson());
-                            godotOnFire.emitGodotSignal("_on_link_account_completed", signalParams);
+                            signalParams.Status = 1;
+                            signalParams.Message = "Begin sign in request has failed and couldn't sending intent";
+                            signalParams.Data = new GodotFirebaseUser(null).toJson();
+                            godotOnFire.emitGodotSignal(linkSignalName, signalParams.toDictionary());
                         }
                     }
                 })
@@ -168,16 +173,16 @@ public class GoogleSignin {
                         // No saved credentials found. Launch the One Tap sign-up flow, or
                         // do nothing and continue presenting the signed-out UI.
                         Log.e(TAG, "Link account has failed. " + e.getLocalizedMessage(), e);
-                        signalParams.put("status", 1);
-                        signalParams.put("message", "Begin sign in request has failed and couldn't sending intent");
-                        signalParams.put("data", new GodotFirebaseUser(null).toJson());
-                        godotOnFire.emitGodotSignal("_on_link_account_completed", signalParams);
+                        signalParams.Status = 1;
+                        signalParams.Message = "Begin sign in request has failed and couldn't sending intent";
+                        signalParams.Data = new GodotFirebaseUser(null).toJson();
+                        godotOnFire.emitGodotSignal(linkSignalName, signalParams.toDictionary());
                     }
                 });
     }
 
     public void onMainActivityResult(int requestCode, int resultCode, Intent data) {
-        Dictionary signalParams = new Dictionary();
+        SignalParams signalParams = new SignalParams();
         if(requestCode == RC_SIGN_IN){
             try{
                 SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
@@ -188,20 +193,20 @@ public class GoogleSignin {
                 }
                 else{
                     Log.w(TAG, "Sign in request has failed because google id token is null");
-                    signalParams.put("status", 1);
-                    signalParams.put("message", "Sign in request has failed because google id token is null");
-                    signalParams.put("data", new GodotFirebaseUser(null).toJson());
-                    godotOnFire.emitGodotSignal("_on_google_signin_completed", signalParams);
+                    signalParams.Status = 1;
+                    signalParams.Message = "Sign in request has failed because google id token is null";
+                    signalParams.Data = new GodotFirebaseUser(null).toJson();
+                    godotOnFire.emitGodotSignal(signInSignalName, signalParams.toDictionary());
                 }
             }
             catch (ApiException e){
                 // user cancel the one tap intent
                 Log.w(TAG, "firebaseAuthWithGoogle:failure. " + e.getLocalizedMessage(), e);
                 Log.w(TAG, "Sign in request has failed because user cancel the process");
-                signalParams.put("status", 1);
-                signalParams.put("message", "Sign in request has failed because user cancel the process");
-                signalParams.put("data", new GodotFirebaseUser(null).toJson());
-                godotOnFire.emitGodotSignal("_on_google_signin_completed", signalParams);
+                signalParams.Status = 1;
+                signalParams.Message = "Sign in request has failed because user cancel the process";
+                signalParams.Data = new GodotFirebaseUser(null).toJson();
+                godotOnFire.emitGodotSignal(signInSignalName, signalParams.toDictionary());
             }
         }
         else if (requestCode == RC_LINK){
@@ -213,19 +218,19 @@ public class GoogleSignin {
                     linkWithGoogleCredential(idToken);
                 }
                 else{
-                    signalParams.put("status", 1);
-                    signalParams.put("message", "Sign in request has failed because google id token is null");
-                    signalParams.put("data", new GodotFirebaseUser(null).toJson());
-                    godotOnFire.emitGodotSignal("_on_link_account_completed", signalParams);
+                    signalParams.Status = 1;
+                    signalParams.Message = "Sign in request has failed because google id token is null";
+                    signalParams.Data = new GodotFirebaseUser(null).toJson();
+                    godotOnFire.emitGodotSignal(linkSignalName, signalParams.toDictionary());
                 }
             }
-            catch (ApiException e){
+            catch (Exception e){
                 Log.w(TAG, "link account with Google failed :" + e.getLocalizedMessage(), e);
                 Log.w(TAG, "Sign in request has failed because user cancel the process");
-                signalParams.put("status", 1);
-                signalParams.put("message", "Sign in request has failed because user cancel the process");
-                signalParams.put("data", new GodotFirebaseUser(null).toJson());
-                godotOnFire.emitGodotSignal("_on_link_account_completed", signalParams);
+                signalParams.Status = 1;
+                signalParams.Message = "Sign in request has failed because user cancel the process";
+                signalParams.Data = new GodotFirebaseUser(null).toJson();
+                godotOnFire.emitGodotSignal(linkSignalName, signalParams.toDictionary());
             }
         }
     }
@@ -233,7 +238,7 @@ public class GoogleSignin {
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        Dictionary signalParams = new Dictionary();
+        SignalParams signalParams = new SignalParams();
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(godotActivity, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -245,25 +250,25 @@ public class GoogleSignin {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser currentUser = task.getResult().getUser();
                             user = new GodotFirebaseUser(currentUser);
-                            signalParams.put("status", 0);
-                            signalParams.put("message", "Sign in with google credential has succeed");
-                            signalParams.put("data", user.toJson());
+                            signalParams.Status = 0;
+                            signalParams.Message = "Sign in with google credential has succeed";
+                            signalParams.Data = user.toJson();
                         } else {
                             // sign in fails
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            signalParams.put("status", 1);
-                            signalParams.put("message", "Sign in with google credential has failed");
-                            signalParams.put("data", user.toJson());
+                            signalParams.Status = 1;
+                            signalParams.Message = "Sign in with google credential has failed";
+                            signalParams.Data = user.toJson();
                         }
 
-                        godotOnFire.emitGodotSignal("_on_google_signin_completed", signalParams);
+                        godotOnFire.emitGodotSignal(signInSignalName, signalParams.toDictionary());
                     }
                 });
     }
 
     private void linkWithGoogleCredential(String idToken){
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        Dictionary signalParams = new Dictionary();
+        SignalParams signalParams = new SignalParams();
         mAuth.getCurrentUser().linkWithCredential(credential)
                 .addOnCompleteListener(godotActivity, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -273,18 +278,17 @@ public class GoogleSignin {
                             Log.d(TAG, "linkWithGoogleCredential:success");
                             FirebaseUser currentUser = task.getResult().getUser();
                             user = new GodotFirebaseUser(currentUser);
-                            signalParams.put("status", 0);
-                            signalParams.put("message", "Sign in with google credential has succeed");
-                            signalParams.put("data", user.toJson());
+                            signalParams.Status = 0;
+                            signalParams.Message = "Sign in with google credential has succeed";
                         }
                         else{
                             Log.w(TAG, "linkWithGoogleCredential:failure", task.getException());
-                            signalParams.put("status", 1);
-                            signalParams.put("message", "Link with google credential has failed");
-                            signalParams.put("data", user.toJson());
+                            signalParams.Status = 1;
+                            signalParams.Message = "Link with google credential has failed";
 
                         }
-                        godotOnFire.emitGodotSignal("_on_link_account_completed", signalParams);
+                        signalParams.Data = user.toJson();
+                        godotOnFire.emitGodotSignal(linkSignalName, signalParams.toDictionary());
                     }
         });
     }
