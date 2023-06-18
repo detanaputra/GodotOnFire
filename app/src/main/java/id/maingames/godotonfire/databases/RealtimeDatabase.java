@@ -37,7 +37,6 @@ public class RealtimeDatabase {
     private static String TAG = "";
     private static RealtimeDatabase instance;
     private FirebaseDatabase database;
-    private DatabaseReference dbRef;
     private GodotOnFire godotOnFire;
     private Activity godotActivity;
 
@@ -52,7 +51,6 @@ public class RealtimeDatabase {
         instance.database.setPersistenceEnabled(true);
         instance.godotOnFire = _godotOnFire;
         instance.godotActivity = _godotActivity;
-        instance.dbRef = instance.database.getReference();
     }
 
     public static RealtimeDatabase getInstance(){
@@ -66,7 +64,7 @@ public class RealtimeDatabase {
     public void set(String collName, String jsonString, Boolean isUserData){
         String signalName = godotActivity.getString(R.string.GOF_database_set_completed);
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "set ";
         SignalParams signalParams = new SignalParams();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null){
@@ -84,11 +82,12 @@ public class RealtimeDatabase {
             godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
+        DatabaseReference dbRef;
         if(isUserData){
-            dbRef.child(collName).child(user.getUid());
+            dbRef = database.getReference().child(collName).child(user.getUid());
         }
         else{
-            dbRef.child(collName);
+            dbRef = database.getReference().child(collName);
         }
         dbRef.setValue(_data)
             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -115,7 +114,7 @@ public class RealtimeDatabase {
     public void push(String collName, String jsonString, Boolean isUserData){
         String signalName = godotActivity.getString(R.string.GOF_database_push_completed);;
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "push ";
         SignalParams signalParams = new SignalParams();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null){
@@ -133,11 +132,12 @@ public class RealtimeDatabase {
             godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
+        DatabaseReference dbRef;
         if(isUserData){
-            dbRef.child(collName).child(user.getUid());
+            dbRef = database.getReference().child(collName).child(user.getUid());
         }
         else{
-            dbRef.child(collName);
+            dbRef = database.getReference().child(collName);
         }
         dbRef.push().setValue(_data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -164,7 +164,7 @@ public class RealtimeDatabase {
     public void update(String collName, String jsonString, Boolean isUserData){
         String signalName = godotActivity.getString(R.string.GOF_database_update_completed);;
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "update ";
         SignalParams signalParams = new SignalParams();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null){
@@ -182,11 +182,12 @@ public class RealtimeDatabase {
             godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
+        DatabaseReference dbRef;
         if(isUserData){
-            dbRef.child(collName).child(user.getUid());
+            dbRef = database.getReference().child(collName).child(user.getUid());
         }
         else{
-            dbRef.child(collName);
+            dbRef = database.getReference().child(collName);
         }
         dbRef.updateChildren(_data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -212,7 +213,7 @@ public class RealtimeDatabase {
     public void get(String collName, Boolean isUserData){
         String signalName = godotActivity.getString(R.string.GOF_database_get_completed);;
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "get ";
         SignalParams signalParams = new SignalParams();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null){
@@ -222,11 +223,12 @@ public class RealtimeDatabase {
             godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
+        DatabaseReference dbRef;
         if(isUserData){
-            dbRef.child(collName).child(user.getUid());
+            dbRef = database.getReference().child(collName).child(user.getUid());
         }
         else{
-            dbRef.child(collName);
+            dbRef = database.getReference().child(collName);
         }
         dbRef.get()
             .addOnSuccessListener(godotActivity, new OnSuccessListener<DataSnapshot>() {
@@ -265,7 +267,7 @@ public class RealtimeDatabase {
     public void remove(String collName, Boolean isUserData){
         String signalName = godotActivity.getString(R.string.GOF_database_remove_completed);
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "get ";
         SignalParams signalParams = new SignalParams();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null){
@@ -275,11 +277,12 @@ public class RealtimeDatabase {
             godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
+        DatabaseReference dbRef;
         if(isUserData){
-            dbRef.child(collName).child(user.getUid());
+            dbRef = database.getReference().child(collName).child(user.getUid());
         }
         else{
-            dbRef.child(collName);
+            dbRef = database.getReference().child(collName);
         }
         dbRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

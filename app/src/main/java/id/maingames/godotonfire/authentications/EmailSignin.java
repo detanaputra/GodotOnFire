@@ -38,8 +38,8 @@ public class EmailSignin {
         instance.godotOnFire = _godotOnFire;
         instance.godotActivity = _godotActivity;
         instance.mAuth = FirebaseAuth.getInstance();
-        signInSignalName = _godotActivity.getString(R.string.GOF_sign_in_email_completed);
-        signUpSignalName = _godotActivity.getString(R.string.GOF_sign_up_email_completed);
+        signInSignalName = _godotActivity.getString(R.string.GOF_email_sign_in_completed);
+        signUpSignalName = _godotActivity.getString(R.string.GOF_email_sign_up_completed);
         linkSignalName = _godotActivity.getString(R.string.GOF_link_account_completed);
         sendVerificationSignalName = _godotActivity.getString(R.string.GOF_send_email_verification_completed);
     }

@@ -59,10 +59,10 @@ public class Firestore {
         return instance;
     }
 
-    public void setData(String collName, String jsonString, String docName){
+    public void set(String collName, String jsonString, String docName){
         String signalName = godotActivity.getString(R.string.GOF_firestore_set_completed);
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "set ";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         SignalParams signalParams = new SignalParams();
         if (user == null){
@@ -109,10 +109,10 @@ public class Firestore {
             });
     }
 
-    public void addData(String collName, String jsonString){
+    public void add(String collName, String jsonString){
         String signalName = godotActivity.getString(R.string.GOF_firestore_add_completed);
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "add ";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         SignalParams signalParams = new SignalParams();
         if (user == null){
@@ -152,10 +152,10 @@ public class Firestore {
                 });
     }
 
-    public void updateData(String collName, String jsonString, String docName){
+    public void update(String collName, String jsonString, String docName){
         String signalName = godotActivity.getString(R.string.GOF_firestore_update_completed);
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "update ";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         SignalParams signalParams = new SignalParams();
         if (user == null){
@@ -202,10 +202,10 @@ public class Firestore {
             });
     }
 
-    public void readData(String collName, String docName){
+    public void read(String collName, String docName){
         String signalName = godotActivity.getString(R.string.GOF_firestore_read_completed);
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "read ";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         SignalParams signalParams = new SignalParams();
         if (user == null){
@@ -256,10 +256,10 @@ public class Firestore {
             });
     }
 
-    public void deleteData(String collName, String docName){
+    public void delete(String collName, String docName){
         String signalName = godotActivity.getString(R.string.GOF_firestore_delete_completed);
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "delete ";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         SignalParams signalParams = new SignalParams();
         if (user == null){

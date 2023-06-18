@@ -67,7 +67,7 @@ public class GodotOnFire extends GodotPlugin {
     @UsedByGodot
     public void getFirebaseUser(){
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "getFirebaseUser ";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         GodotFirebaseUser godotUser = new GodotFirebaseUser(user);
         SignalParams signalParams = new SignalParams();
@@ -81,7 +81,7 @@ public class GodotOnFire extends GodotPlugin {
             signalParams.Message = "Firebase user is null. It might be because user is signed out";
         }
         signalParams.Data = godotUser.toJson();
-        emitGodotSignal(getActivity().getString(R.string.GOF_got_firebase_user), signalParams.toDictionary());
+        emitGodotSignal(getActivity().getString(R.string.GOF_get_firebase_user_completed), signalParams.toDictionary());
     }
 
     @UsedByGodot
@@ -90,7 +90,6 @@ public class GodotOnFire extends GodotPlugin {
         auth.signOut();
     }
 
-    // TODO
     private void listenAuthState(){
         FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
@@ -202,47 +201,47 @@ public class GodotOnFire extends GodotPlugin {
 
     @UsedByGodot
     public void firestoreSetUserData(String collName, String jsonString){
-        Firestore.getInstance().setData(collName, jsonString, null);
+        Firestore.getInstance().set(collName, jsonString, null);
     }
 
     @UsedByGodot
     public void firestoreSetData(String collName, String jsonString, String docName){
-        Firestore.getInstance().setData(collName, jsonString, docName);
+        Firestore.getInstance().set(collName, jsonString, docName);
     }
 
     @UsedByGodot
     public void firestoreAddData(String collName, String jsonString){
-        Firestore.getInstance().addData(collName, jsonString);
+        Firestore.getInstance().add(collName, jsonString);
     }
 
     @UsedByGodot
     public void firestoreUpdateUserData(String collName, String jsonString){
-        Firestore.getInstance().updateData(collName, jsonString, null);
+        Firestore.getInstance().update(collName, jsonString, null);
     }
 
     @UsedByGodot
     public void firestoreUpdateData(String collName, String jsonString, String docName){
-        Firestore.getInstance().updateData(collName, jsonString, docName);
+        Firestore.getInstance().update(collName, jsonString, docName);
     }
 
     @UsedByGodot
     public void firestoreReadUserData(String collName){
-        Firestore.getInstance().readData(collName, null);
+        Firestore.getInstance().read(collName, null);
     }
 
     @UsedByGodot
     public void firestoreReadData(String collName, String docName){
-        Firestore.getInstance().readData(collName, docName);
+        Firestore.getInstance().read(collName, docName);
     }
 
     @UsedByGodot
     public void firestoreDeleteUserData(String collName){
-        Firestore.getInstance().deleteData(collName, null);
+        Firestore.getInstance().delete(collName, null);
     }
 
     @UsedByGodot
     public void firestoreDeleteData(String collName, String docName){
-        Firestore.getInstance().deleteData(collName, docName);
+        Firestore.getInstance().delete(collName, docName);
     }
 
     @UsedByGodot
@@ -307,14 +306,14 @@ public class GodotOnFire extends GodotPlugin {
         Set<SignalInfo> signals = new ArraySet<>();
         signals.add(new SignalInfo(getActivity().getString(R.string.GOF_godotonfire_initiated), Dictionary.class));
 
-        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_got_firebase_user), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_get_firebase_user_completed), Dictionary.class));
         signals.add(new SignalInfo(getActivity().getString(R.string.GOF_firebase_user_signed_in), Dictionary.class));
         signals.add(new SignalInfo(getActivity().getString(R.string.GOF_firebase_user_signed_out), Dictionary.class));
         signals.add(new SignalInfo(getActivity().getString(R.string.GOF_sign_in_anonymously_completed), Dictionary.class));
         signals.add(new SignalInfo(getActivity().getString(R.string.GOF_google_sign_in_completed), Dictionary.class));
         signals.add(new SignalInfo(getActivity().getString(R.string.GOF_link_account_completed), Dictionary.class));
-        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_sign_up_email_completed), Dictionary.class));
-        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_sign_in_email_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_email_sign_up_completed), Dictionary.class));
+        signals.add(new SignalInfo(getActivity().getString(R.string.GOF_email_sign_in_completed), Dictionary.class));
         signals.add(new SignalInfo(getActivity().getString(R.string.GOF_send_email_verification_completed), Dictionary.class));
 
         signals.add(new SignalInfo(getActivity().getString(R.string.GOF_database_set_completed), Dictionary.class));

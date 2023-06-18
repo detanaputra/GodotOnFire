@@ -59,7 +59,7 @@ public class RemoteConfig {
     public void fetch(){
         String signalName = godotActivity.getString(R.string.GOF_remote_config_fetch_completed);
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "fetch ";
         SignalParams signalParams = new SignalParams();
         mfirebaseRemoteConfig.fetch().addOnSuccessListener(godotActivity, new OnSuccessListener<Void>() {
             @Override
@@ -85,7 +85,7 @@ public class RemoteConfig {
     public void activate(){
         String signalName = godotActivity.getString(R.string.GOF_remote_config_activate_completed);
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "activate ";
         SignalParams signalParams = new SignalParams();
         mfirebaseRemoteConfig.activate()
             .addOnSuccessListener(godotActivity, new OnSuccessListener<Boolean>() {
@@ -111,7 +111,7 @@ public class RemoteConfig {
     public void fetchAndActivate(){
         String signalName = godotActivity.getString(R.string.GOF_remote_config_activate_completed);
         String className = getClass().getSimpleName() + " ";
-        String method = getClass().getEnclosingMethod().getName() + " ";
+        String method = "fetchAndActivate ";
         SignalParams signalParams = new SignalParams();
         mfirebaseRemoteConfig.fetchAndActivate()
             .addOnSuccessListener(godotActivity, new OnSuccessListener<Boolean>() {
