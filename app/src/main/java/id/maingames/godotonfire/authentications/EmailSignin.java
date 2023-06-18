@@ -13,13 +13,17 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.godotengine.godot.Dictionary;
-
 import id.maingames.godotonfire.GodotOnFire;
+import id.maingames.godotonfire.R;
+import id.maingames.godotonfire.utilities.SignalParams;
 
 public class EmailSignin {
     private static String TAG = "";
     private static EmailSignin instance;
+    private static String signInSignalName;
+    private static String signUpSignalName;
+    private static String linkSignalName;
+    private static String sendVerificationSignalName;
     private FirebaseAuth mAuth;
     private GodotOnFire godotOnFire;
     private Activity godotActivity;
@@ -34,6 +38,10 @@ public class EmailSignin {
         instance.godotOnFire = _godotOnFire;
         instance.godotActivity = _godotActivity;
         instance.mAuth = FirebaseAuth.getInstance();
+        signInSignalName = _godotActivity.getString(R.string.GOF_email_sign_in_completed);
+        signUpSignalName = _godotActivity.getString(R.string.GOF_email_sign_up_completed);
+        linkSignalName = _godotActivity.getString(R.string.GOF_link_account_completed);
+        sendVerificationSignalName = _godotActivity.getString(R.string.GOF_send_email_verification_completed);
     }
 
     public static EmailSignin getInstance(){
@@ -50,44 +58,44 @@ public class EmailSignin {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         GodotFirebaseUser user = new GodotFirebaseUser(null);
-                        Dictionary signalParams = new Dictionary();
+                        SignalParams signalParams = new SignalParams();
                         if(task.isSuccessful()){
                             Log.d(TAG, "createUserWithEmail:success");
-                            signalParams.put("status", 0);
-                            signalParams.put("message", "Create user with email has succeed");
+                            signalParams.Status = 0;
+                            signalParams.Message = "Create user with email has succeed";
                             user = new GodotFirebaseUser(task.getResult().getUser());
                         }
                         else{
-                            signalParams.put("status", 1);
-                            signalParams.put("message", "Create user with email has failed");
+                            signalParams.Status = 1;
+                            signalParams.Message = "Create user with email has failed";
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         }
-                        signalParams.put("data", user.toJson());
-                        godotOnFire.emitGodotSignal("_on_signup_email_completed", signalParams);
+                        signalParams.Data = user.toJson();
+                        godotOnFire.emitGodotSignal(signUpSignalName, signalParams.toDictionary());
                     }
                 });
     }
 
-    public void signin(String email, String password){
+    public void signIn(String email, String password){
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(godotActivity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         GodotFirebaseUser user = new GodotFirebaseUser(null);
-                        Dictionary signalParams = new Dictionary();
+                        SignalParams signalParams = new SignalParams();
                         if(task.isSuccessful()){
                             Log.d(TAG, "signInWithEmail:success");
-                            signalParams.put("status", 0);
-                            signalParams.put("message", "Sign in with email has succeed");
+                            signalParams.Status = 0;
+                            signalParams.Message = "Sign in with email has succeed";
                             user = new GodotFirebaseUser(task.getResult().getUser());
                         }
                         else{
-                            signalParams.put("status", 1);
-                            signalParams.put("message", "Sign in with email has failed");
+                            signalParams.Status = 1;
+                            signalParams.Message = "Sign in with email has failed";
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                         }
-                        signalParams.put("data", user.toJson());
-                        godotOnFire.emitGodotSignal("_on_signin_email_completed", signalParams);
+                        signalParams.Data = user.toJson();
+                        godotOnFire.emitGodotSignal(signInSignalName, signalParams.toDictionary());
                     }
                 });
     }
@@ -99,20 +107,20 @@ public class EmailSignin {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         GodotFirebaseUser user = new GodotFirebaseUser(null);
-                        Dictionary signalParams = new Dictionary();
+                        SignalParams signalParams = new SignalParams();
                         if(task.isSuccessful()){
                             Log.d(TAG, "linkWithEmailCredential:success");
-                            signalParams.put("status", 0);
-                            signalParams.put("message", "Link with email credential has succeed");
+                            signalParams.Status = 0;
+                            signalParams.Message = "Link with email credential has succeed";
                             user = new GodotFirebaseUser(task.getResult().getUser());
                         }
                         else{
                             Log.w(TAG, "linkWithEmailCredential:failure", task.getException());
-                            signalParams.put("status", 1);
-                            signalParams.put("message", "Link with email credential has failed");
+                            signalParams.Status = 1;
+                            signalParams.Message = "Link with email credential has failed";
                         }
-                        signalParams.put("data", user.toJson());
-                        godotOnFire.emitGodotSignal("_on_link_account_completed", signalParams);
+                        signalParams.Data = user.toJson();
+                        godotOnFire.emitGodotSignal(linkSignalName, signalParams.toDictionary());
                     }
                 });
     }
@@ -123,18 +131,18 @@ public class EmailSignin {
                 .addOnCompleteListener(godotActivity, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Dictionary signalParams = new Dictionary();
+                        SignalParams signalParams = new SignalParams();
                         if(task.isSuccessful()){
-                            signalParams.put("status", 0);
-                            signalParams.put("message", "Send email verification has succeed");
+                            signalParams.Status = 0;
+                            signalParams.Message = "Send email verification has succeed";
                             Log.d(TAG, "sendEmailVerification:success");
                         }
                         else{
-                            signalParams.put("status", 1);
-                            signalParams.put("message", "Send email verification has failed");
+                            signalParams.Status = 1;
+                            signalParams.Message = "Send email verification has failed";
                             Log.w(TAG, "sendEmailVerification:failure ", task.getException());
                         }
-                        godotOnFire.emitGodotSignal("_on_send_email_verification_completed", signalParams);
+                        godotOnFire.emitGodotSignal(sendVerificationSignalName, signalParams.toDictionary());
                     }
                 });
     }

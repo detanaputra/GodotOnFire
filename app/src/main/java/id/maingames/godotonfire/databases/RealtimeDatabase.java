@@ -18,15 +18,25 @@ import org.godotengine.godot.Dictionary;
 import java.util.Map;
 
 import id.maingames.godotonfire.GodotOnFire;
+import id.maingames.godotonfire.R;
 import id.maingames.godotonfire.utilities.JsonConverter;
+import id.maingames.godotonfire.utilities.SignalParams;
 
+/**
+ * This is a class to interact with Firebase Realtime Database.
+ *
+ * Signals:
+ * _database_set_completed
+ * _database_push_completed
+ * _database_update_completed
+ * _database_get_completed
+ * _database_remove_completed
+ *
+*/
 public class RealtimeDatabase {
     private static String TAG = "";
-
     private static RealtimeDatabase instance;
-
     private FirebaseDatabase database;
-    private DatabaseReference dbRef;
     private GodotOnFire godotOnFire;
     private Activity godotActivity;
 
@@ -41,7 +51,6 @@ public class RealtimeDatabase {
         instance.database.setPersistenceEnabled(true);
         instance.godotOnFire = _godotOnFire;
         instance.godotActivity = _godotActivity;
-        instance.dbRef = instance.database.getReference();
     }
 
     public static RealtimeDatabase getInstance(){
@@ -52,115 +61,193 @@ public class RealtimeDatabase {
         return instance;
     }
 
-    public void WriteUserData(String collName, String jsonString){
+    public void set(String collName, String jsonString, Boolean isUserData){
+        String signalName = godotActivity.getString(R.string.GOF_database_set_completed);
+        String className = getClass().getSimpleName() + " ";
+        String method = "set ";
+        SignalParams signalParams = new SignalParams();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        Dictionary signalParams = new Dictionary();
         if (user == null){
-            signalParams.put("status", 1);
-            signalParams.put("message", "Firebase user is null");
-            Log.e(TAG, "realtimeDatabaseWriteUserdata:failed. Firebase user is null, user might be signed out.");
-            godotOnFire.emitGodotSignal("_on_database_write_completed", signalParams);
+            signalParams.Status = 1;
+            signalParams.Message = "Firebase user is null";
+            Log.e(TAG,  className + method + "has failed. Firebase user is null, user might be signed out.");
+            godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
         Dictionary _data = JsonConverter.jsonToDictionary(jsonString);
         if (_data == null){
-            signalParams.put("status", 1);
-            signalParams.put("message", "Failed to marshall json string to Dictionary");
-            Log.w(TAG, "realtimeDatabaseWriteUserdata:failed. Failed to marshall json string to Dictionary.");
-            godotOnFire.emitGodotSignal("_on_database_write_completed", signalParams);
+            signalParams.Status = 1;
+            signalParams.Message = "Failed to marshall json string to Dictionary";
+            Log.e(TAG, className + method + "has failed. Failed to marshall json string to Dictionary.");
+            godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
-        dbRef.child(collName).child(user.getUid()).setValue(_data)
+        DatabaseReference dbRef;
+        if(isUserData){
+            dbRef = database.getReference().child(collName).child(user.getUid());
+        }
+        else{
+            dbRef = database.getReference().child(collName);
+        }
+        dbRef.setValue(_data)
             .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    signalParams.put("status", 0);
-                    signalParams.put("message", "Database write has success");
-                    Log.d(TAG, "realtimeDatabaseWriteUserdata:success");
-                    godotOnFire.emitGodotSignal("_on_database_write_completed", signalParams);
+                    signalParams.Status = 0;
+                    signalParams.Message = "Database set value is successful";
+                    Log.d(TAG, className + method + "is successful");
+                    godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
                 }
             })
             .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    signalParams.put("status", 1);
-                    signalParams.put("message", "Database write has failed");
-                    Log.e(TAG, "realtimeDatabaseWriteUserdata:failed. code: " + e.getLocalizedMessage());
-                    godotOnFire.emitGodotSignal("_on_database_write_completed", signalParams);
+                    signalParams.Status = 1;
+                    signalParams.Message = "Database set value has failed";
+                    Log.e(TAG, className + method + "has failed. code: " + e.getLocalizedMessage(), e);
+                    godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
                 }
             });
+
     }
 
-    public void UpdateUserData(String collName, String jsonString){
+    public void push(String collName, String jsonString, Boolean isUserData){
+        String signalName = godotActivity.getString(R.string.GOF_database_push_completed);;
+        String className = getClass().getSimpleName() + " ";
+        String method = "push ";
+        SignalParams signalParams = new SignalParams();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        Dictionary signalParams = new Dictionary();
         if (user == null){
-            signalParams.put("status", 1);
-            signalParams.put("message", "Firebase user is null");
-            Log.e(TAG, "realtimeDatabaseUpdateUserdata:failed. Firebase user is null, user might be signed out.");
-            godotOnFire.emitGodotSignal("_on_database_update_completed", signalParams);
+            signalParams.Status = 1;
+            signalParams.Message = "Firebase user is null";
+            Log.e(TAG,  className + method + "has failed. Firebase user is null, user might be signed out.");
+            godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
         Dictionary _data = JsonConverter.jsonToDictionary(jsonString);
         if (_data == null){
-            signalParams.put("status", 1);
-            signalParams.put("message", "Failed to marshall json string to Dictionary");
-            Log.w(TAG, "realtimeDatabaseUpdateUserdata:failed. Failed to marshall json string to Dictionary.");
-            godotOnFire.emitGodotSignal("_on_database_update_completed", signalParams);
+            signalParams.Status = 1;
+            signalParams.Message = "Failed to marshall json string to Dictionary";
+            Log.e(TAG, className + method + "has failed. Failed to marshall json string to Dictionary.");
+            godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
-        dbRef.child(collName).child(user.getUid()).updateChildren(_data)
-            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    signalParams.put("status", 0);
-                    signalParams.put("message", "Database update has success");
-                    Log.d(TAG, "realtimeDatabaseUpdateUserdata:success");
-                    godotOnFire.emitGodotSignal("_on_database_update_completed", signalParams);
-                }
-            })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    signalParams.put("status", 1);
-                    signalParams.put("message", "Database write has failed");
-                    Log.w(TAG, "realtimeDatabaseUpdateUserdata:failed. code: " + e.getLocalizedMessage());
-                    Log.e(TAG, "realtimeDatabaseUpdateUserdata:failed. code: " + e);
-                    godotOnFire.emitGodotSignal("_on_database_update_completed", signalParams);
-                }
-            });
+        DatabaseReference dbRef;
+        if(isUserData){
+            dbRef = database.getReference().child(collName).child(user.getUid());
+        }
+        else{
+            dbRef = database.getReference().child(collName);
+        }
+        dbRef.push().setValue(_data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        signalParams.Status = 0;
+                        signalParams.Message = "Database set value is successful";
+                        Log.d(TAG, className + method + "is successful");
+                        godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        signalParams.Status = 1;
+                        signalParams.Message = "Database set value has failed";
+                        Log.e(TAG, className + method + "has failed. code: " + e.getLocalizedMessage(), e);
+                        godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
+                    }
+                });
+
     }
 
-    public void ReadUserData(String collName){
+    public void update(String collName, String jsonString, Boolean isUserData){
+        String signalName = godotActivity.getString(R.string.GOF_database_update_completed);;
+        String className = getClass().getSimpleName() + " ";
+        String method = "update ";
+        SignalParams signalParams = new SignalParams();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        Dictionary signalParams = new Dictionary();
         if (user == null){
-            signalParams.put("status", 1);
-            signalParams.put("message", "Firebase user is null");
-            Log.e(TAG, "realtimeDatabaseWriteUserdata:failed. Firebase user is null, user might be signed out.");
-            godotOnFire.emitGodotSignal("_on_database_read_completed", signalParams);
+            signalParams.Status = 1;
+            signalParams.Message = "Firebase user is null";
+            Log.e(TAG,  className + method + "has failed. Firebase user is null, user might be signed out.");
+            godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
-        dbRef.child(collName).child(user.getUid()).get()
+        Dictionary _data = JsonConverter.jsonToDictionary(jsonString);
+        if (_data == null){
+            signalParams.Status = 1;
+            signalParams.Message = "Failed to marshall json string to Dictionary";
+            Log.e(TAG, className + method + "has failed. Failed to marshall json string to Dictionary.");
+            godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
+            return;
+        }
+        DatabaseReference dbRef;
+        if(isUserData){
+            dbRef = database.getReference().child(collName).child(user.getUid());
+        }
+        else{
+            dbRef = database.getReference().child(collName);
+        }
+        dbRef.updateChildren(_data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        signalParams.Status = 0;
+                        signalParams.Message = "Database update value is successful";
+                        Log.d(TAG, className + method + "is successful");
+                        godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        signalParams.Status = 1;
+                        signalParams.Message = "Database update value has failed";
+                        Log.e(TAG, className + method + "has failed. code: " + e.getLocalizedMessage(), e);
+                        godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
+                    }
+                });
+    }
+
+    public void get(String collName, Boolean isUserData){
+        String signalName = godotActivity.getString(R.string.GOF_database_get_completed);;
+        String className = getClass().getSimpleName() + " ";
+        String method = "get ";
+        SignalParams signalParams = new SignalParams();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null){
+            signalParams.Status = 1;
+            signalParams.Message = "Firebase user is null";
+            Log.e(TAG,  className + method + "has failed. Firebase user is null, user might be signed out.");
+            godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
+            return;
+        }
+        DatabaseReference dbRef;
+        if(isUserData){
+            dbRef = database.getReference().child(collName).child(user.getUid());
+        }
+        else{
+            dbRef = database.getReference().child(collName);
+        }
+        dbRef.get()
             .addOnSuccessListener(godotActivity, new OnSuccessListener<DataSnapshot>() {
                 @Override
                 public void onSuccess(DataSnapshot dataSnapshot) {
                     try{
                         Map<String, Object> obj = (Map<String, Object>)dataSnapshot.getValue();
-                        /*Dictionary data = new Dictionary();
-                        data.putAll(obj);*/
                         String data = JsonConverter.mapToJson(obj);
-                        signalParams.put("status", 0);
-                        signalParams.put("message", "Database read has success");
-                        signalParams.put("data", data);
-                        Log.d(TAG, "realtimeDatabaseReadUserdata:success " + data);
-                        godotOnFire.emitGodotSignal("_on_database_read_completed", signalParams);
+                        signalParams.Status = 0;
+                        signalParams.Message = "Database read is successful";
+                        signalParams.Data = data;
+                        Log.d(TAG, "Database read is successful");
+                        godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
                     } catch (Exception e){
-                        Log.w(TAG, "realtimeDatabaseReadUserdata:failed " + e.getLocalizedMessage());
-                        Log.e(TAG, "realtimeDatabaseReadUserdata:failed " + e);
-                        signalParams.put("status", 1);
-                        signalParams.put("message", "Database read has failed");
-                        godotOnFire.emitGodotSignal("_on_database_read_completed", signalParams);
+                        Log.e(TAG,  className + method + "has failed. " + e.getLocalizedMessage());
+                        Log.e(TAG, className + method + "has failed " + e);
+                        signalParams.Status = 1;
+                        signalParams.Message = "Database read has failed";
+                        godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
                     }
 
                 }
@@ -168,40 +255,51 @@ public class RealtimeDatabase {
             .addOnFailureListener(godotActivity, new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    signalParams.put("status", 1);
-                    signalParams.put("message", "Database read has failed");
-                    Log.e(TAG, "realtimeDatabaseReadUserdata:failure", e);
-                    godotOnFire.emitGodotSignal("_on_database_read_completed", signalParams);
+                    Log.e(TAG,  className + method + "has failed. " + e.getLocalizedMessage());
+                    Log.e(TAG, className + method + "has failed " + e);
+                    signalParams.Status = 1;
+                    signalParams.Message = "Database read has failed";
+                    godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
                 }
             });
     }
 
-    public void DeleteUserData(String collName){
+    public void remove(String collName, Boolean isUserData){
+        String signalName = godotActivity.getString(R.string.GOF_database_remove_completed);
+        String className = getClass().getSimpleName() + " ";
+        String method = "get ";
+        SignalParams signalParams = new SignalParams();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        Dictionary signalParams = new Dictionary();
         if (user == null){
-            signalParams.put("status", 1);
-            signalParams.put("message", "Firebase user is null");
-            Log.e(TAG, "realtimeDatabaseDeleteUserdata:failed. Firebase user is null, user might be signed out.");
-            godotOnFire.emitGodotSignal("_on_database_delete_completed", signalParams);
+            signalParams.Status = 1;
+            signalParams.Message = "Firebase user is null";
+            Log.e(TAG,  className + method + "has failed. Firebase user is null, user might be signed out.");
+            godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             return;
         }
-        dbRef.child(collName).child(user.getUid()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+        DatabaseReference dbRef;
+        if(isUserData){
+            dbRef = database.getReference().child(collName).child(user.getUid());
+        }
+        else{
+            dbRef = database.getReference().child(collName);
+        }
+        dbRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                signalParams.put("status", 0);
-                signalParams.put("message", "Database delete has success");
-                Log.d(TAG, "realtimeDatabaseDeleteUserdata:success");
-                godotOnFire.emitGodotSignal("_on_database_delete_completed", signalParams);
+                signalParams.Status = 0;
+                signalParams.Message = "Database delete is successful";
+                Log.d(TAG, className + method + "is successful");
+                godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             }
         })
         .addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                signalParams.put("status", 1);
-                signalParams.put("message", "Database delete has failed");
-                Log.e(TAG, "realtimeDatabaseDeleteUserdata:failure. code: " + e.getLocalizedMessage());
-                godotOnFire.emitGodotSignal("_on_database_delete_completed", signalParams);
+                signalParams.Status = 1;
+                signalParams.Message = "Database delete has failed";
+                Log.e(TAG, className + method + "has failed. " + e.getLocalizedMessage(), e);
+                godotOnFire.emitGodotSignal(signalName, signalParams.toDictionary());
             }
         });
     }

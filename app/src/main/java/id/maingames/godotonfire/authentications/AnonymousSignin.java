@@ -14,7 +14,13 @@ import org.godotengine.godot.Dictionary;
 
 import id.maingames.godotonfire.GodotOnFire;
 import id.maingames.godotonfire.R;
+import id.maingames.godotonfire.utilities.SignalParams;
 
+/**
+ *
+ * Signals:
+ * _sign_in_anonymously_completed
+ * */
 public class AnonymousSignin {
     private static String TAG = "";
     private static AnonymousSignin instance;
@@ -49,22 +55,22 @@ public class AnonymousSignin {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         GodotFirebaseUser user = new GodotFirebaseUser(null);
-                        Dictionary signalParams = new Dictionary();
+                        SignalParams signalParams = new SignalParams();
                         if(task.isSuccessful()){
                             // sign in success
-                            Log.d(TAG, "signInAnonymously:success");
-                            signalParams.put(godotActivity.getString(R.string.status), 0);
-                            signalParams.put(godotActivity.getString(R.string.message), "Sign in anonymously has succeed");
+                            Log.d(TAG, "Sign In Anonymously is successful");
+                            signalParams.Status = 0;
+                            signalParams.Message = "Sign In anonymously is successful";
                             user = new GodotFirebaseUser(task.getResult().getUser());
                         }
                         else{
                             // sign in failed
-                            signalParams.put(godotActivity.getString(R.string.status), 1);
-                            signalParams.put(godotActivity.getString(R.string.message), "Sign in anonymously has failed");
-                            Log.w(TAG, "signInAnonymously:failure", task.getException());
+                            signalParams.Status = 1;
+                            signalParams.Message = "Sign in anonymously has failed";
+                            Log.w(TAG, "signInAnonymously has failed. ", task.getException());
                         }
-                        signalParams.put(godotActivity.getString(R.string.data), user.toJson());
-                        godotOnFire.emitGodotSignal("_on_signin_anonymously_completed", signalParams);
+                        signalParams.Data = user.toJson();
+                        godotOnFire.emitGodotSignal(godotActivity.getString(R.string.GOF_sign_in_anonymously_completed), signalParams.toDictionary());
                     }
                 });
     }
