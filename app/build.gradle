@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace 'id.maingames.godotonfire'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         //applicationId "id.maingames.godotonfire"
         minSdk 24
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0.0"
 
